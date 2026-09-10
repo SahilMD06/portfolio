@@ -27,3 +27,9 @@ yarn-debug.log*
 yarn-error.log*
 .vercel
 coverage/
+
+.vercel
+.env*
+
+# Vercel CLI appends a broad .env* rule above; keep the template tracked.
+!.env.example
