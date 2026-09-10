@@ -63,7 +63,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 | ORM | Drizzle ORM + drizzle-kit migrations |
 | Validation | Zod v4, shared by server actions and the REST API |
 | Auth | Custom: Node `scrypt` hashing + opaque database-backed sessions |
-| Storage | Pluggable driver — local filesystem or Supabase Storage |
+| Storage | Pluggable driver — local filesystem, Vercel Blob, or Supabase Storage |
 | Analytics | Vercel Web Analytics (~1 KB, only active on Vercel) |
 
 ### Request flow
@@ -132,7 +132,8 @@ Copy `.env.example` to `.env.local`. Never commit a filled-in file.
 | `ADMIN_EMAIL` | seeding | Email of the first admin user. |
 | `ADMIN_PASSWORD` | seeding | Password for that user (min 10 chars). Used only by `db:seed`. |
 | `NEXT_PUBLIC_SITE_URL` | yes | Canonical origin for metadata, sitemap and canonical URLs. |
-| `STORAGE_DRIVER` | no | `local` (default) or `supabase`. |
+| `STORAGE_DRIVER` | production | `local` (default), `vercel-blob`, or `supabase`. **Never `local` on a serverless host.** |
+| `BLOB_READ_WRITE_TOKEN` | if vercel-blob | Set automatically by Vercel once a Blob store is connected. |
 | `SUPABASE_URL` | if supabase | Supabase project URL. |
 | `SUPABASE_SERVICE_ROLE_KEY` | if supabase | Service-role key. **Server only** — never exposed to the browser. |
 | `SUPABASE_STORAGE_BUCKET` | no | Bucket name, default `portfolio-media`. |
@@ -196,9 +197,15 @@ Real, server-verified authentication — not a frontend-only guard.
 Binaries never go in the database; `media` stores metadata and a storage key.
 
 - `STORAGE_DRIVER=local` → files in `./.data/uploads`, served through
-  `/media/[id]`.
+  `/media/[id]`. **Development only** — a serverless filesystem is ephemeral,
+  so uploads would vanish on the next cold start.
+- `STORAGE_DRIVER=vercel-blob` → files in a Vercel Blob store, served from its
+  CDN; `/media/[id]` redirects rather than proxying bytes. Use this on Vercel.
 - `STORAGE_DRIVER=supabase` → files in a Supabase Storage bucket; `/media/[id]`
   redirects to the public URL.
+
+Drivers return the key to persist from `put()`, because Vercel Blob mints its
+own URL rather than using the key we generate.
 
 Uploads are validated before any bytes are written: JPEG, PNG, WebP, AVIF, GIF
 (5 MB) and PDF (10 MB). SVG is deliberately rejected because it can carry inline
@@ -290,29 +297,43 @@ npm run verify      # lint + typecheck + build
 
 ## Deployment
 
-Target: **Vercel** (app) + **Supabase** (PostgreSQL + Storage).
+Target: **Vercel** (app) + **Neon** (PostgreSQL) + **Vercel Blob** (uploads).
 
-1. **Database** — create a Supabase project. Copy the *pooled* connection string
-   (port 6543) into `DATABASE_URL`.
-2. **Storage** — create a public bucket named `portfolio-media`.
-3. **Push the schema**
+Neon provides Postgres but no object storage, and Vercel's filesystem is
+ephemeral — so a Blob store is required for the resume, project images and
+certificates to survive.
+
+1. **Database** — create a project at [neon.tech](https://neon.tech) and copy
+   the *pooled* connection string (it contains `-pooler`). Keep `?sslmode=require`.
+
+2. **Push the schema and seed the admin user**
 
    ```bash
-   DATABASE_URL="postgresql://..." npm run db:migrate
-   DATABASE_URL="postgresql://..." ADMIN_EMAIL=you@example.com \
-     ADMIN_PASSWORD='a-long-password' npm run db:seed
+   export DATABASE_URL="postgresql://user:pass@ep-xxx-pooler.region.aws.neon.tech/neondb?sslmode=require"
+   npm run db:migrate
+   ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='a-long-password' npm run db:seed
    ```
 
-4. **Deploy** — import the repository on Vercel and set the environment
-   variables from the table above (`DATABASE_URL`, `SESSION_SECRET`,
-   `NEXT_PUBLIC_SITE_URL`, `STORAGE_DRIVER=supabase`, `SUPABASE_URL`,
-   `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_STORAGE_ORIGIN`).
-5. **Verify** — load the site, sign in at `/admin`, create a test project,
-   confirm it appears publicly, then delete it.
+3. **Deploy** — import the GitHub repository on Vercel, then add these
+   environment variables (Production + Preview):
+
+   | Variable | Value |
+   | --- | --- |
+   | `DATABASE_URL` | the Neon pooled connection string |
+   | `SESSION_SECRET` | `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+   | `NEXT_PUBLIC_SITE_URL` | your final domain, e.g. `https://neel.vercel.app` |
+   | `STORAGE_DRIVER` | `vercel-blob` |
+
+4. **Blob store** — in the Vercel dashboard: *Storage → Create → Blob*, connect
+   it to the project. This injects `BLOB_READ_WRITE_TOKEN` automatically.
+   Redeploy so the app picks it up.
+
+5. **Verify** — load the site, sign in at `/admin`, upload the resume, create a
+   test project, confirm both appear publicly, then delete the test project.
 
 `SESSION_SECRET` must be set in production; the app refuses to start without it.
-
----
+Set `NEXT_PUBLIC_SITE_URL` before relying on the sitemap or canonical URLs —
+they are generated from it.
 
 ## Dependencies and why
 
@@ -325,6 +346,7 @@ Runtime dependencies are deliberately few.
 | `postgres` | PostgreSQL driver used in production. |
 | `@electric-sql/pglite` | Embedded PostgreSQL so local development and tests need no server. |
 | `zod` | One validation schema shared by server actions and the REST API. |
+| `@vercel/blob` | Object storage on Vercel, where the filesystem is ephemeral. Lazily imported, so it costs nothing when another driver is used. |
 | `@vercel/analytics` | ~1 KB, deferred, cookie-free page analytics. |
 
 Notably **not** used: an auth framework (scrypt + DB sessions is ~120 lines and

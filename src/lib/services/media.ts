@@ -30,7 +30,9 @@ export async function uploadMedia(file: File, alt?: string): Promise<Media> {
   const storage = getStorage();
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  await storage.put(key, buffer, file.type);
+  // Drivers may rewrite the key (Vercel Blob mints its own URL), so persist
+  // whatever put() hands back rather than the key we generated.
+  const storedKey = await storage.put(key, buffer, file.type);
 
   const db = await getDb();
   const rows = await db
@@ -39,7 +41,7 @@ export async function uploadMedia(file: File, alt?: string): Promise<Media> {
       filename: file.name.slice(0, 255),
       mimeType: file.type,
       size: buffer.byteLength,
-      storageKey: key,
+      storageKey: storedKey,
       driver: storage.name,
       alt: alt?.slice(0, 300) ?? null,
     })
@@ -48,7 +50,7 @@ export async function uploadMedia(file: File, alt?: string): Promise<Media> {
   const created = rows[0];
   if (!created) {
     // Metadata insert failed — do not leave an orphaned object behind.
-    await storage.delete(key);
+    await storage.delete(storedKey);
     throw new Error('Failed to record uploaded file.');
   }
 

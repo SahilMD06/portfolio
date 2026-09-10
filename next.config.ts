@@ -23,10 +23,30 @@ const nextConfig: NextConfig = {
       }),
   images: {
     formats: ['image/avif', 'image/webp'],
-    // Remote images are only ever served from the configured storage origin.
-    remotePatterns: process.env.NEXT_PUBLIC_STORAGE_ORIGIN
-      ? [{ protocol: 'https', hostname: new URL(process.env.NEXT_PUBLIC_STORAGE_ORIGIN).hostname }]
-      : [],
+    /**
+     * Remote images are only ever served from a configured storage origin.
+     * Vercel Blob mints a per-store subdomain that is not known until the store
+     * exists, so that host family is allow-listed by pattern; every other
+     * driver must name its exact origin via NEXT_PUBLIC_STORAGE_ORIGIN.
+     */
+    remotePatterns: [
+      ...(process.env.STORAGE_DRIVER === 'vercel-blob'
+        ? ([
+            {
+              protocol: 'https' as const,
+              hostname: '*.public.blob.vercel-storage.com',
+            },
+          ])
+        : []),
+      ...(process.env.NEXT_PUBLIC_STORAGE_ORIGIN
+        ? ([
+            {
+              protocol: 'https' as const,
+              hostname: new URL(process.env.NEXT_PUBLIC_STORAGE_ORIGIN).hostname,
+            },
+          ])
+        : []),
+    ],
   },
   async headers() {
     return [

@@ -31,10 +31,12 @@ export const env = {
   })(),
   siteUrl: (optional('NEXT_PUBLIC_SITE_URL') ?? 'http://localhost:3000').replace(/\/$/, ''),
   storage: {
-    driver: (optional('STORAGE_DRIVER') ?? 'local') as 'local' | 'supabase',
+    driver: (optional('STORAGE_DRIVER') ?? 'local') as 'local' | 'supabase' | 'vercel-blob',
     supabaseUrl: optional('SUPABASE_URL'),
     supabaseServiceKey: optional('SUPABASE_SERVICE_ROLE_KEY'),
     bucket: optional('SUPABASE_STORAGE_BUCKET') ?? 'portfolio-media',
+    /** Set automatically by Vercel when a Blob store is connected. */
+    blobToken: optional('BLOB_READ_WRITE_TOKEN'),
   },
   admin: {
     email: optional('ADMIN_EMAIL') ?? 'admin@example.com',
