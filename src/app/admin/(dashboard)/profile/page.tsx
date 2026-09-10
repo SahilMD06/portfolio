@@ -1,3 +1,4 @@
+import { ChangePasswordForm } from '@/components/admin/forms/change-password-form';
 import { ProfileForm } from '@/components/admin/forms/profile-form';
 import { requireAdminPage } from '@/lib/auth/guard';
 import { getProfile } from '@/lib/services/content';
@@ -20,6 +21,10 @@ export default async function AdminProfilePage() {
       </header>
 
       <ProfileForm profile={profile} avatar={avatar} />
+
+      <div className="mt-8">
+        <ChangePasswordForm />
+      </div>
     </>
   );
 }

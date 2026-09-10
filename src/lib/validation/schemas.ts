@@ -223,6 +223,28 @@ export const contactMessageSchema = z.object({
   website: z.string().max(0, 'Spam detected.').optional().or(z.literal('')),
 });
 
+/**
+ * Changing the admin password requires the current one, so a stolen session
+ * cannot be escalated into permanent account takeover.
+ */
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Enter your current password.').max(200),
+    newPassword: z
+      .string()
+      .min(12, 'Use at least 12 characters.')
+      .max(200, 'Use at most 200 characters.'),
+    confirmPassword: z.string().max(200),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'The two passwords do not match.',
+    path: ['confirmPassword'],
+  })
+  .refine((data) => data.newPassword !== data.currentPassword, {
+    message: 'The new password must be different from the current one.',
+    path: ['newPassword'],
+  });
+
 export const reorderSchema = z.object({
   ids: z.array(z.number().int().positive()).max(500),
 });
@@ -238,3 +260,4 @@ export type CertificationInput = z.infer<typeof certificationSchema>;
 export type AchievementInput = z.infer<typeof achievementSchema>;
 export type SocialLinkInput = z.infer<typeof socialLinkSchema>;
 export type ContactMessageInput = z.infer<typeof contactMessageSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

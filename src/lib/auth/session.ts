@@ -25,6 +25,14 @@ function hashToken(token: string): string {
   return createHash('sha256').update(`${token}${env.sessionSecret}`).digest('hex');
 }
 
+/**
+ * Exposed so a password change can revoke every session *except* the one making
+ * the change. Takes the raw cookie value and returns the stored hash.
+ */
+export function hashSessionToken(token: string): string {
+  return hashToken(token);
+}
+
 export type SessionUser = Pick<User, 'id' | 'email' | 'name' | 'role'>;
 
 /**

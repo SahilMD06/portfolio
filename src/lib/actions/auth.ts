@@ -1,15 +1,22 @@
 'use server';
 
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { eq } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 
-import { createSession, destroySession } from '@/lib/auth/session';
-import { verifyPassword } from '@/lib/auth/password';
+import {
+  SESSION_COOKIE,
+  createSession,
+  destroySession,
+  hashSessionToken,
+  requireAdmin,
+} from '@/lib/auth/session';
+import { hashPassword, verifyPassword } from '@/lib/auth/password';
 import { getDb } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { sessions, users } from '@/lib/db/schema';
 import { clientKey, rateLimit } from '@/lib/rate-limit';
-import { loginSchema } from '@/lib/validation/schemas';
+import { changePasswordSchema, loginSchema } from '@/lib/validation/schemas';
+import type { ActionResult } from './types';
 
 export interface LoginState {
   error?: string;
@@ -66,4 +73,89 @@ export async function login(_previous: LoginState, formData: FormData): Promise<
 export async function logout(): Promise<never> {
   await destroySession();
   redirect('/admin/login');
+}
+
+/**
+ * Changes the signed-in admin's password.
+ *
+ * Requires the current password, so a hijacked session cannot be turned into
+ * permanent account takeover. On success every *other* session is revoked, so
+ * anyone already holding a stolen cookie is logged out while the person making
+ * the change stays signed in.
+ */
+export async function changePassword(
+  _previous: ActionResult,
+  formData: FormData,
+): Promise<ActionResult> {
+  let user;
+  try {
+    user = await requireAdmin();
+  } catch {
+    return { ok: false, message: 'You are not signed in.' };
+  }
+
+  const parsed = changePasswordSchema.safeParse({
+    currentPassword: formData.get('currentPassword'),
+    newPassword: formData.get('newPassword'),
+    confirmPassword: formData.get('confirmPassword'),
+  });
+
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const key = issue.path[0];
+      if (typeof key === 'string' && !fieldErrors[key]) fieldErrors[key] = issue.message;
+    }
+    return { ok: false, message: 'Please correct the highlighted fields.', fieldErrors };
+  }
+
+  // Throttle so the current-password field cannot be brute forced.
+  const headerList = await headers();
+  const limit = rateLimit(clientKey(headerList, `pwchange:${user.id}`), 5, 15 * 60 * 1000);
+  if (!limit.allowed) {
+    return {
+      ok: false,
+      message: `Too many attempts. Try again in ${Math.ceil(limit.retryAfterSeconds / 60)} minutes.`,
+    };
+  }
+
+  try {
+    const db = await getDb();
+    const rows = await db
+      .select({ passwordHash: users.passwordHash })
+      .from(users)
+      .where(eq(users.id, user.id))
+      .limit(1);
+
+    const current = rows[0];
+    if (!current || !(await verifyPassword(parsed.data.currentPassword, current.passwordHash))) {
+      return {
+        ok: false,
+        message: 'That is not your current password.',
+        fieldErrors: { currentPassword: 'Incorrect password.' },
+      };
+    }
+
+    await db
+      .update(users)
+      .set({ passwordHash: await hashPassword(parsed.data.newPassword), updatedAt: new Date() })
+      .where(eq(users.id, user.id));
+
+    // Revoke every other session; keep the one making the change.
+    const cookieStore = await cookies();
+    const token = cookieStore.get(SESSION_COOKIE)?.value;
+    const currentHash = token ? hashSessionToken(token) : null;
+    await db
+      .delete(sessions)
+      .where(
+        currentHash
+          ? and(eq(sessions.userId, user.id), ne(sessions.tokenHash, currentHash))
+          : eq(sessions.userId, user.id),
+      );
+
+    return { ok: true, message: 'Password changed. Other sessions have been signed out.' };
+  } catch (error) {
+    console.error('Failed to change password:', error);
+    return { ok: false, message: 'Could not change your password. Please try again.' };
+  }
 }
