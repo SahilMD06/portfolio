@@ -2,17 +2,19 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
-import { outboundLinkProps } from '@/lib/utils';
+import { gmailComposeUrl, outboundLinkProps } from '@/lib/utils';
 
 /**
  * An outbound link that behaves sensibly for email addresses.
  *
- * Web URLs open in a new tab. For `mailto:` the browser hands off to the
- * visitor's mail app — but when none is registered (browser-based Gmail on
- * Windows, for example) that click silently does nothing. So the address is
- * also copied to the clipboard and a short confirmation shown, which means the
- * click is useful either way. Default navigation is not prevented, so a mail
- * app still opens where one exists.
+ * Web URLs open in a new tab. A `mailto:` link is rewritten to Gmail's compose
+ * URL and opened in a new tab, so clicking "Email" always lands on a new email
+ * with the address already in To:. A bare mailto: only works when the visitor
+ * has a mail app registered; many browser-based Gmail users do not, and the
+ * click would silently do nothing.
+ *
+ * The address is also copied to the clipboard, so a visitor who uses another
+ * mail provider can paste it straight into their own client.
  */
 export function OutboundLink({
   href,
@@ -28,6 +30,7 @@ export function OutboundLink({
   title?: string;
 }) {
   const isMail = /^mailto:/i.test(href);
+  const resolvedHref = isMail ? gmailComposeUrl(href) : href;
   const [copied, setCopied] = useState(false);
   const timer = useRef<number | undefined>(undefined);
 
@@ -41,19 +44,19 @@ export function OutboundLink({
       window.clearTimeout(timer.current);
       timer.current = window.setTimeout(() => setCopied(false), 2200);
     } catch {
-      // Clipboard unavailable (insecure context or denied) — the mailto
-      // navigation still proceeds, so there is nothing further to do.
+      // Clipboard unavailable (insecure context or denied) — the compose
+      // tab still opens, so there is nothing further to do.
     }
   }
 
   return (
     <span className="relative inline-flex">
       <a
-        href={href}
-        {...outboundLinkProps(href)}
+        href={resolvedHref}
+        {...outboundLinkProps(resolvedHref)}
         onClick={isMail ? copyAddress : undefined}
         aria-label={ariaLabel}
-        title={isMail ? (title ?? 'Email — also copies the address') : title}
+        title={isMail ? (title ?? 'Write an email in Gmail (address is also copied)') : title}
         className={className}
       >
         {children}

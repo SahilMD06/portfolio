@@ -84,3 +84,23 @@ export function outboundLinkProps(href: string): { target?: '_blank'; rel?: stri
   if (/^(mailto|tel):/i.test(href.trim())) return {};
   return { target: '_blank', rel: 'noopener noreferrer' };
 }
+
+/**
+ * Turns a `mailto:` link into a Gmail compose URL with the recipient in "To:".
+ *
+ * A bare mailto: only works when the visitor has a mail app registered, which
+ * many browser-based Gmail users on Windows do not — the click does nothing.
+ * Gmail's compose URL opens a ready-to-write email in the browser instead.
+ * Subject, body and cc/bcc from the mailto: query are carried across.
+ */
+export function gmailComposeUrl(mailto: string): string {
+  const [target = '', query = ''] = mailto.replace(/^mailto:/i, '').split('?');
+  const params = new URLSearchParams({ view: 'cm', fs: '1', to: decodeURIComponent(target) });
+  const source = new URLSearchParams(query);
+  const map: Record<string, string> = { subject: 'su', body: 'body', cc: 'cc', bcc: 'bcc' };
+  for (const [key, value] of source) {
+    const mapped = map[key.toLowerCase()];
+    if (mapped) params.set(mapped, value);
+  }
+  return `https://mail.google.com/mail/?${params.toString()}`;
+}

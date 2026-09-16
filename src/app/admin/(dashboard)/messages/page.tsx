@@ -1,5 +1,6 @@
 import { desc } from 'drizzle-orm';
 
+import { OutboundLink } from '@/components/site/outbound-link';
 import { Badge, Card, EmptyState } from '@/components/ui';
 import { requireAdminPage } from '@/lib/auth/guard';
 import { getDb } from '@/lib/db';
@@ -39,12 +40,12 @@ export default async function AdminMessagesPage() {
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
                   <p className="text-sm font-medium">{message.name}</p>
-                  <a
+                  <OutboundLink
                     href={`mailto:${message.email}`}
                     className="text-xs text-accent hover:underline"
                   >
                     {message.email}
-                  </a>
+                  </OutboundLink>
                 </div>
                 <div className="flex items-center gap-2">
                   {message.read ? null : <Badge tone="accent">New</Badge>}

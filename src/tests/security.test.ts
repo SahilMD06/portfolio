@@ -150,3 +150,15 @@ test('experience form round-trips a long resume bullet without truncation or spl
   assert.deepEqual(parsed.responsibilities, [bullet, 'Second bullet, with a comma.']);
   assert.deepEqual(parsed.technologies, ['Python', 'FastAPI']);
 });
+
+test('mailto links become a Gmail compose URL with the recipient in To', async () => {
+  const { gmailComposeUrl } = await import('../lib/utils');
+  const url = new URL(gmailComposeUrl('mailto:sahilmohammed062004@gmail.com'));
+  assert.equal(url.origin + url.pathname, 'https://mail.google.com/mail/');
+  assert.equal(url.searchParams.get('view'), 'cm');
+  assert.equal(url.searchParams.get('to'), 'sahilmohammed062004@gmail.com');
+
+  const withSubject = new URL(gmailComposeUrl('mailto:a@b.co?subject=Hello%20there&cc=c@d.co'));
+  assert.equal(withSubject.searchParams.get('su'), 'Hello there');
+  assert.equal(withSubject.searchParams.get('cc'), 'c@d.co');
+});
