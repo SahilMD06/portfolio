@@ -6,6 +6,7 @@ import { ExternalIcon, GithubIcon } from '@/components/ui/icons';
 import type { PublicProject } from '@/lib/services/content';
 import { mediaUrl } from '@/lib/services/media';
 
+import { outboundLinkProps } from '@/lib/utils';
 /**
  * `priority` should be set only for cards in the first viewport; everything
  * else lazy-loads, which is the default for next/image.
@@ -84,8 +85,7 @@ export function ProjectCard({
             {project.githubUrl ? (
               <a
                 href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                {...outboundLinkProps(project.githubUrl)}
                 className="inline-flex items-center gap-1.5 text-xs text-fg-muted hover:text-fg"
                 aria-label={`${project.title} source code on GitHub`}
               >
@@ -96,8 +96,7 @@ export function ProjectCard({
             {project.demoUrl ? (
               <a
                 href={project.demoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                {...outboundLinkProps(project.demoUrl)}
                 className="inline-flex items-center gap-1.5 text-xs text-fg-muted hover:text-fg"
                 aria-label={`${project.title} live demo`}
               >

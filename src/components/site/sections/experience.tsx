@@ -4,7 +4,7 @@ import { Badge, Section, SectionHeading, TechChip } from '@/components/ui';
 import { FileIcon } from '@/components/ui/icons';
 import { getExperiences } from '@/lib/services/content';
 import { mediaUrl } from '@/lib/services/media';
-import { formatDateRange, toParagraphs } from '@/lib/utils';
+import { formatDateRange, outboundLinkProps, toParagraphs } from '@/lib/utils';
 
 export async function Experience() {
   const experiences = await getExperiences();
@@ -100,8 +100,7 @@ export async function Experience() {
               {document ? (
                 <a
                   href={document}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...outboundLinkProps(document)}
                   className="mt-3 inline-flex items-center gap-1.5 text-sm text-accent hover:underline"
                 >
                   <FileIcon width="14" height="14" />

@@ -1,5 +1,6 @@
 import { Container, LinkButton } from '@/components/ui';
 import { ArrowRightIcon, DownloadIcon, SocialIcon } from '@/components/ui/icons';
+import { OutboundLink } from '@/components/site/outbound-link';
 import { getProfile, getResumeMedia, getSocialLinks } from '@/lib/services/content';
 import { mediaUrl } from '@/lib/services/media';
 
@@ -63,15 +64,12 @@ export async function Hero() {
           <ul className="mt-8 flex flex-wrap items-center gap-2">
             {links.map((link) => (
               <li key={link.id}>
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <OutboundLink href={link.url}
                   className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-fg-muted transition-colors duration-150 hover:text-fg"
                 >
                   <SocialIcon platform={link.platform} width="15" height="15" />
                   {link.label}
-                </a>
+                </OutboundLink>
               </li>
             ))}
           </ul>

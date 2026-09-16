@@ -71,3 +71,16 @@ export function formatDateTime(value: Date | string | null | undefined): string 
     minute: '2-digit',
   });
 }
+
+/**
+ * Attributes for an outbound link.
+ *
+ * Web URLs open in a new tab. `mailto:` and `tel:` must NOT: a new tab for them
+ * is left blank, and when no mail or phone handler is registered (common with
+ * browser-based Gmail on Windows) nothing else happens — a dead tab. In the
+ * same tab the browser hands off to the handler without navigating away.
+ */
+export function outboundLinkProps(href: string): { target?: '_blank'; rel?: string } {
+  if (/^(mailto|tel):/i.test(href.trim())) return {};
+  return { target: '_blank', rel: 'noopener noreferrer' };
+}

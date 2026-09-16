@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-import { cn } from '@/lib/utils';
+import { cn, outboundLinkProps } from '@/lib/utils';
 
 /**
  * Shared presentational primitives. All server components — none of them need
@@ -65,8 +65,9 @@ export function LinkButton({
   const classes = cn(buttonClass(variant, size), className);
   if (external) {
     return (
-      // noreferrer also blocks reverse-tabnabbing on target=_blank.
-      <a href={href} target="_blank" rel="noopener noreferrer" className={classes} {...props}>
+      // New tab for web URLs (noreferrer also blocks reverse-tabnabbing);
+      // same tab for mailto:/tel:, which otherwise leave a dead blank tab.
+      <a href={href} {...outboundLinkProps(href)} className={classes} {...props}>
         {children}
       </a>
     );

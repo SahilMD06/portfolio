@@ -2,7 +2,7 @@ import { Card, Section, SectionHeading } from '@/components/ui';
 import { ExternalIcon, FileIcon } from '@/components/ui/icons';
 import { getAchievements, getCertifications } from '@/lib/services/content';
 import { mediaUrl } from '@/lib/services/media';
-import { formatPartialDate } from '@/lib/utils';
+import { formatPartialDate, outboundLinkProps } from '@/lib/utils';
 
 export async function Certifications() {
   const items = await getCertifications();
@@ -40,8 +40,7 @@ export async function Certifications() {
                   {item.credentialUrl ? (
                     <a
                       href={item.credentialUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      {...outboundLinkProps(item.credentialUrl)}
                       className="inline-flex items-center gap-1.5 text-xs text-accent hover:underline"
                     >
                       <ExternalIcon width="14" height="14" />
@@ -51,8 +50,7 @@ export async function Certifications() {
                   {file ? (
                     <a
                       href={file}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      {...outboundLinkProps(file)}
                       className="inline-flex items-center gap-1.5 text-xs text-fg-muted hover:text-fg"
                     >
                       <FileIcon width="14" height="14" />
@@ -105,8 +103,7 @@ export async function Achievements() {
                   {item.url ? (
                     <a
                       href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      {...outboundLinkProps(item.url)}
                       className="inline-flex items-center gap-1.5 text-xs text-accent hover:underline"
                     >
                       <ExternalIcon width="14" height="14" />
@@ -116,8 +113,7 @@ export async function Achievements() {
                   {file ? (
                     <a
                       href={file}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      {...outboundLinkProps(file)}
                       className="inline-flex items-center gap-1.5 text-xs text-fg-muted hover:text-fg"
                     >
                       <FileIcon width="14" height="14" />

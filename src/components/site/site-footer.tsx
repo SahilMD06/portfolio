@@ -1,5 +1,6 @@
 import { Container } from '@/components/ui';
 import { SocialIcon } from '@/components/ui/icons';
+import { OutboundLink } from '@/components/site/outbound-link';
 import { getProfile, getSiteSettings, getSocialLinks } from '@/lib/services/content';
 
 export async function SiteFooter() {
@@ -26,16 +27,13 @@ export async function SiteFooter() {
           <ul className="flex items-center gap-1.5">
             {links.map((link) => (
               <li key={link.id}>
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <OutboundLink href={link.url}
                   aria-label={link.label}
                   title={link.label}
                   className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-fg-muted transition-colors duration-150 hover:text-fg"
                 >
                   <SocialIcon platform={link.platform} width="17" height="17" />
-                </a>
+                </OutboundLink>
               </li>
             ))}
           </ul>

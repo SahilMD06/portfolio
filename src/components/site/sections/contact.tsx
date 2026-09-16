@@ -1,6 +1,7 @@
 import { Card, LinkButton, Section, SectionHeading } from '@/components/ui';
 import { DownloadIcon, SocialIcon } from '@/components/ui/icons';
 import { ContactForm } from '@/components/site/contact-form';
+import { OutboundLink } from '@/components/site/outbound-link';
 import {
   getProfile,
   getResumeMedia,
@@ -34,12 +35,14 @@ export async function Contact() {
               <p className="text-xs font-semibold tracking-[0.1em] text-fg-subtle uppercase">
                 Email
               </p>
-              <a
-                href={`mailto:${profile.email}`}
-                className="mt-1.5 block break-all text-[0.95rem] text-accent hover:underline"
-              >
-                {profile.email}
-              </a>
+              <div className="mt-1.5">
+                <OutboundLink
+                  href={`mailto:${profile.email}`}
+                  className="block break-all text-[0.95rem] text-accent hover:underline"
+                >
+                  {profile.email}
+                </OutboundLink>
+              </div>
             </Card>
           ) : null}
 
@@ -51,15 +54,12 @@ export async function Contact() {
               <ul className="mt-3 space-y-2">
                 {links.map((link) => (
                   <li key={link.id}>
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <OutboundLink href={link.url}
                       className="inline-flex items-center gap-2.5 text-sm text-fg-muted hover:text-fg"
                     >
                       <SocialIcon platform={link.platform} width="15" height="15" />
                       {link.label}
-                    </a>
+                    </OutboundLink>
                   </li>
                 ))}
               </ul>
