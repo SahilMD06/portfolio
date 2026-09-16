@@ -1,4 +1,4 @@
-# Neel Khandelwal — Portfolio + CMS
+# Sahil Mohammed — Portfolio + CMS
 
 A personal developer portfolio whose content lives entirely in PostgreSQL and is
 managed through a private admin dashboard. Nothing on the public site is

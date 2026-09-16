@@ -56,7 +56,10 @@ export const slugSchema = trimmed(220)
   .min(1, 'Slug is required.')
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Use lowercase letters, numbers and single hyphens.');
 
-/** Accepts a comma-separated string (from a text input) or an array. */
+/**
+ * Short labels such as technologies. Accepts a comma- or newline-separated
+ * string (from a text input) or an array.
+ */
 export const stringListSchema = z.preprocess(
   (v) => {
     if (typeof v === 'string') {
@@ -68,6 +71,24 @@ export const stringListSchema = z.preprocess(
     return v ?? [];
   },
   z.array(trimmed(120).min(1)).max(60),
+);
+
+/**
+ * Sentence-length bullet points (responsibilities, achievements). Split on
+ * newlines only — bullets routinely contain commas, and splitting on them would
+ * shred every sentence into fragments when saved from the admin form.
+ */
+export const bulletListSchema = z.preprocess(
+  (v) => {
+    if (typeof v === 'string') {
+      return v
+        .split('\n')
+        .map((s) => s.replace(/^\s*[-•*]\s*/, '').trim())
+        .filter(Boolean);
+    }
+    return v ?? [];
+  },
+  z.array(trimmed(600).min(1)).max(30),
 );
 
 const optionalMediaId = z.preprocess(
@@ -92,6 +113,7 @@ export const loginSchema = z.object({
 export const profileSchema = z.object({
   fullName: requiredText(160, 'Name'),
   headline: requiredText(240, 'Headline'),
+  availability: trimmed(160).default(''),
   shortBio: trimmed(1000).default(''),
   about: trimmed(6000).default(''),
   currentFocus: trimmed(2000).default(''),
@@ -162,8 +184,8 @@ export const experienceSchema = z.object({
   endDate: partialDate,
   isCurrent: checkbox,
   description: trimmed(6000).default(''),
-  responsibilities: stringListSchema,
-  achievements: stringListSchema,
+  responsibilities: bulletListSchema,
+  achievements: bulletListSchema,
   technologies: stringListSchema,
   logoMediaId: optionalMediaId,
   documentMediaId: optionalMediaId,
@@ -182,7 +204,7 @@ export const educationSchema = z.object({
   endDate: partialDate,
   grade: optionalText(60),
   description: trimmed(4000).default(''),
-  achievements: stringListSchema,
+  achievements: bulletListSchema,
   displayOrder,
 });
 

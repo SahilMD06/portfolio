@@ -32,11 +32,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
+  const [project, profile] = await Promise.all([getProjectBySlug(slug), getProfile()]);
   if (!project) return { title: 'Project not found', robots: { index: false, follow: false } };
 
   const image = mediaUrl(project.image);
-  const description = project.summary || `${project.title} — a project by Neel Khandelwal.`;
+  const description = project.summary || `${project.title} — a project by ${profile.fullName}.`;
 
   return {
     title: project.title,

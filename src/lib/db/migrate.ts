@@ -22,7 +22,9 @@ async function main() {
     const { migrate } = await import('drizzle-orm/postgres-js/migrator');
     const postgres = (await import('postgres')).default;
     // max: 1 — migrations must run on a single connection.
-    const client = postgres(databaseUrl, { max: 1 });
+    // onnotice: Postgres reports idempotent CREATE ... IF NOT EXISTS as NOTICEs,
+    // which postgres-js prints as objects that look like errors.
+    const client = postgres(databaseUrl, { max: 1, onnotice: () => {} });
     const db = drizzle(client);
     await migrate(db, { migrationsFolder });
     await client.end();

@@ -35,6 +35,14 @@ export function ProfileForm({
               hint="Shown directly under your name, e.g. Software Engineer · Full-Stack & Data"
               maxLength={240}
             />
+            <TextField
+              name="availability"
+              label="Availability badge"
+              defaultValue={profile.availability}
+              error={errors.availability}
+              hint="Short status above your name, e.g. Open to AI/ML roles · Graduating 2027. Leave empty to hide it."
+              maxLength={160}
+            />
             <div className="grid gap-4 sm:grid-cols-2">
               <TextField
                 name="email"

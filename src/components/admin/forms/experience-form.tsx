@@ -14,6 +14,7 @@ import type { Experience } from '@/lib/db/schema';
 
 const EMPLOYMENT_TYPES = [
   'Internship',
+  'Research',
   'Full-time',
   'Part-time',
   'Contract',

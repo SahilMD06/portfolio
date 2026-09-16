@@ -19,13 +19,15 @@ export async function Hero() {
   return (
     <section className="border-b border-border bg-surface/40">
       <Container className="py-16 sm:py-24">
-        <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs text-fg-muted">
-          <span
-            className="inline-block h-1.5 w-1.5 rounded-full bg-success"
-            aria-hidden="true"
-          />
-          Open to Software Engineering &amp; Internship roles
-        </p>
+        {profile.availability ? (
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs text-fg-muted">
+            <span
+              className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-success"
+              aria-hidden="true"
+            />
+            {profile.availability}
+          </p>
+        ) : null}
 
         <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
           {profile.fullName}

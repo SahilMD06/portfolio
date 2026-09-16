@@ -30,7 +30,7 @@ export function formatDateRange(
   const from = formatPartialDate(start);
   const to = isCurrent ? 'Present' : formatPartialDate(end);
   if (!from) return to;
-  if (!to) return from;
+  if (!to || to === from) return from;
   return `${from} — ${to}`;
 }
 

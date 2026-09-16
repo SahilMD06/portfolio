@@ -1,0 +1,1 @@
+ALTER TABLE "profile" ADD COLUMN "availability" varchar(160) DEFAULT '' NOT NULL;

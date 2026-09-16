@@ -388,6 +388,7 @@ export async function saveProfile(_prev: ActionResult, formData: FormData): Prom
     const values = {
       fullName: d.fullName,
       headline: d.headline,
+      availability: d.availability,
       shortBio: d.shortBio,
       about: d.about,
       currentFocus: d.currentFocus,
@@ -522,7 +523,7 @@ export async function setResume(mediaId: number | null): Promise<ActionResult> {
       .insert(profile)
       .values({
         id: 1,
-        fullName: 'Neel Khandelwal',
+        fullName: 'Portfolio owner',
         headline: 'Software Engineer',
         resumeMediaId: mediaId,
         updatedAt: new Date(),

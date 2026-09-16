@@ -4,7 +4,9 @@ import test from 'node:test';
 import { hashPassword, verifyPassword } from '../lib/auth/password';
 import { MAX_IMAGE_BYTES, UploadError, validateUpload } from '../lib/storage/policy';
 import {
+  bulletListSchema,
   contactMessageSchema,
+  experienceSchema,
   projectSchema,
   slugSchema,
   stringListSchema,
@@ -122,4 +124,29 @@ test('contact form validates email and minimum message length', () => {
     contactMessageSchema.safeParse({ name: 'A B', email: 'a@b.co', message: 'short' }).success,
     false,
   );
+});
+
+test('bullet lists keep commas inside sentences and split only on newlines', () => {
+  const input =
+    'Built a RAG pipeline using FAISS, Sentence Transformers and FastAPI, deployed on Docker.\n' +
+    '• Performed EDA, feature engineering, and model training.\n\n';
+  assert.deepEqual(bulletListSchema.parse(input), [
+    'Built a RAG pipeline using FAISS, Sentence Transformers and FastAPI, deployed on Docker.',
+    'Performed EDA, feature engineering, and model training.',
+  ]);
+});
+
+test('experience form round-trips a long resume bullet without truncation or splitting', () => {
+  const bullet =
+    'Developed and deployed AI/ML solutions including an LLM-based conversational assistant and predictive models, taking them from prototype to working web applications.';
+  const parsed = experienceSchema.parse({
+    company: 'Labmentix',
+    role: 'AI/ML Intern',
+    startDate: '2026-06',
+    // The admin form joins responsibilities with newlines and technologies with commas.
+    responsibilities: [bullet, 'Second bullet, with a comma.'].join('\n'),
+    technologies: 'Python, FastAPI',
+  });
+  assert.deepEqual(parsed.responsibilities, [bullet, 'Second bullet, with a comma.']);
+  assert.deepEqual(parsed.technologies, ['Python', 'FastAPI']);
 });

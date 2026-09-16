@@ -43,8 +43,9 @@ import {
 
 export const DEFAULT_PROFILE: Profile = {
   id: 1,
-  fullName: 'Neel Khandelwal',
-  headline: 'Software Engineer',
+  fullName: 'Portfolio',
+  headline: '',
+  availability: '',
   shortBio: '',
   about: '',
   currentFocus: '',

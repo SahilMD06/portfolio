@@ -80,6 +80,8 @@ export const profile = pgTable('profile', {
   id: integer('id').primaryKey().default(1),
   fullName: varchar('full_name', { length: 160 }).notNull(),
   headline: varchar('headline', { length: 240 }).notNull(),
+  /** Short status shown as a badge above the name, e.g. "Open to AI/ML roles". Empty hides it. */
+  availability: varchar('availability', { length: 160 }).notNull().default(''),
   shortBio: text('short_bio').notNull().default(''),
   about: text('about').notNull().default(''),
   currentFocus: text('current_focus').notNull().default(''),

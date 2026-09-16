@@ -73,7 +73,7 @@ async function main() {
     await db.insert(schema.users).values({
       email: adminEmail.toLowerCase(),
       passwordHash: await hashPassword(adminPassword),
-      name: 'Neel Khandelwal',
+      name: 'Admin',
       role: 'admin',
     });
     console.warn(`Created admin user: ${adminEmail}`);
@@ -85,8 +85,9 @@ async function main() {
   if (await isEmpty(db, 'profile')) {
     await db.insert(schema.profile).values({
       id: 1,
-      fullName: 'Neel Khandelwal',
+      fullName: 'Your Name',
       headline: 'Software Engineer · Full-Stack & Data',
+      availability: 'Open to Software Engineering & Internship roles',
       shortBio:
         'I build fast, reliable web applications end to end — from database schema and APIs through to accessible, performant interfaces.',
       about: `${SAMPLE} I am a software engineer who enjoys working across the whole stack: designing a clean relational model, exposing it through well-shaped APIs, and finishing with an interface that feels quick and obvious to use.
@@ -107,9 +108,9 @@ Recently I have been splitting my time between full-stack product work in TypeSc
   if (await isEmpty(db, 'site_settings')) {
     await db.insert(schema.siteSettings).values({
       id: 1,
-      seoTitle: 'Neel Khandelwal — Software Engineer',
+      seoTitle: 'Your Name — Software Engineer',
       seoDescription:
-        'Portfolio of Neel Khandelwal, a software engineer working across full-stack web development and data. Projects, experience, and contact details.',
+        `${SAMPLE} Portfolio of a software engineer working across full-stack web development and data.`,
       footerText: 'Built with Next.js, TypeScript and PostgreSQL.',
       contactFormEnabled: true,
       analyticsEnabled: true,
