@@ -1,31 +1,38 @@
 import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
-import { Inter } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 
 import './globals.css';
 import { SiteAnalytics } from '@/components/site/analytics';
+import { RevealObserver, SpotlightController } from '@/components/site/motion';
 import { THEME_INIT_SCRIPT } from '@/components/site/theme-store';
 import { env } from '@/lib/env';
 import { getProfile, getSiteSettings } from '@/lib/services/content';
 import { getMedia, mediaUrl } from '@/lib/services/media';
 
 /**
- * Self-hosted by Next at build time: no runtime request to Google, and the
- * `size-adjust` fallback means swapping in the real font causes no layout shift.
+ * Geist for the interface, Geist Mono for technical labels, dates and code-like
+ * metadata. Both are variable fonts self-hosted by Next at build time: no
+ * runtime request to Google, and `size-adjust` fallbacks avoid layout shift.
  */
-const inter = Inter({
+const geist = Geist({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-geist',
+});
+
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-geist-mono',
 });
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fcfcfd' },
-    { media: '(prefers-color-scheme: dark)', color: '#131417' },
-  ],
+  // Dark is the default theme regardless of OS preference.
+  themeColor: '#08090b',
+  colorScheme: 'dark light',
 };
 
 /** Metadata comes from the database, so SEO is editable from /admin. */
@@ -77,23 +84,25 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`} data-theme="dark" suppressHydrationWarning>
       <head>
         {/*
           Must run before first paint so the stored theme is applied during the
           initial style pass. suppressHydrationWarning above covers the
-          attribute this adds to <html>.
+          data-theme attribute and `js` class it sets on <html>.
         */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body className="min-h-dvh antialiased">
         <a
           href="#main"
-          className="sr-only rounded-lg bg-accent px-4 py-2 text-accent-fg focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[100]"
+          className="sr-only rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-fg focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100]"
         >
           Skip to content
         </a>
         {children}
+        <RevealObserver />
+        <SpotlightController />
         <Suspense fallback={null}>
           <SiteAnalytics />
         </Suspense>

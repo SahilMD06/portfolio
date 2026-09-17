@@ -187,6 +187,7 @@ export const experienceSchema = z.object({
   responsibilities: bulletListSchema,
   achievements: bulletListSchema,
   technologies: stringListSchema,
+  pipeline: bulletListSchema,
   logoMediaId: optionalMediaId,
   documentMediaId: optionalMediaId,
   published: checkbox,

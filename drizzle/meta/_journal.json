@@ -15,6 +15,13 @@
       "when": 1789575174849,
       "tag": "0001_profile_availability",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789581662804,
+      "tag": "0002_experience_pipeline",
+      "breakpoints": true
     }
   ]
 }

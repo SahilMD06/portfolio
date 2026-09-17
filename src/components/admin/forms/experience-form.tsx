@@ -138,6 +138,14 @@ export function ExperienceForm({
               error={errors.technologies}
               hint="Comma separated."
             />
+            <TextAreaField
+              name="pipeline"
+              label="Pipeline stages"
+              rows={3}
+              defaultValue={experience?.pipeline.join('\n')}
+              error={errors.pipeline}
+              hint="Optional. One stage per line, shown as a connected flow — e.g. for research: dataset, training, evaluation."
+            />
           </FormSection>
 
           <FormSection title="Files">

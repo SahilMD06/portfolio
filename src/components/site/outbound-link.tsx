@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
-import { gmailComposeUrl, outboundLinkProps } from '@/lib/utils';
+import { cn, gmailComposeUrl, outboundLinkProps } from '@/lib/utils';
 
 /**
  * An outbound link that behaves sensibly for email addresses.
@@ -19,12 +19,15 @@ import { gmailComposeUrl, outboundLinkProps } from '@/lib/utils';
 export function OutboundLink({
   href,
   className,
+  wrapperClassName,
   children,
   'aria-label': ariaLabel,
   title,
 }: {
   href: string;
   className?: string;
+  /** Classes for the positioning wrapper, e.g. `flex w-full` for block rows. */
+  wrapperClassName?: string;
   children: ReactNode;
   'aria-label'?: string;
   title?: string;
@@ -50,7 +53,7 @@ export function OutboundLink({
   }
 
   return (
-    <span className="relative inline-flex">
+    <span className={cn('relative inline-flex', wrapperClassName)}>
       <a
         href={resolvedHref}
         {...outboundLinkProps(resolvedHref)}

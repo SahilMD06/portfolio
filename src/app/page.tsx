@@ -5,63 +5,73 @@ import { SiteFooter } from '@/components/site/site-footer';
 import { SectionSkeleton } from '@/components/site/section-skeleton';
 import { Hero } from '@/components/site/sections/hero';
 import { About } from '@/components/site/sections/about';
-import { Skills } from '@/components/site/sections/skills';
 import { Experience } from '@/components/site/sections/experience';
+import { Research } from '@/components/site/sections/research';
 import { Projects } from '@/components/site/sections/projects';
-import { EducationSection } from '@/components/site/sections/education';
-import { Achievements, Certifications } from '@/components/site/sections/certifications';
+import { Skills } from '@/components/site/sections/skills';
+import { Credentials } from '@/components/site/sections/credentials';
 import { Contact } from '@/components/site/sections/contact';
 import { env } from '@/lib/env';
-import { getProfile, getSiteSettings, getSocialLinks } from '@/lib/services/content';
+import { isResearch, pad2 } from '@/lib/portfolio';
+import {
+  getExperiences,
+  getProfile,
+  getSiteSettings,
+  getSocialLinks,
+} from '@/lib/services/content';
 
 /**
  * Progressive rendering.
  *
- * The header and Hero are awaited so the first viewport is complete and
- * interactive immediately. Every section below is its own Suspense boundary, so
- * the server streams each one as its query resolves rather than holding the
- * whole document until the slowest query finishes.
+ * The header and hero are awaited so the first viewport is complete at once.
+ * Every section below is its own Suspense boundary, so the server streams each
+ * one as its data resolves instead of holding the document for the slowest.
+ *
+ * Section numbers are derived from which sections have content, so hiding
+ * Research (for example) never leaves a gap in the numbering.
  */
 export default async function HomePage() {
-  const profile = await getProfile();
+  const experiences = await getExperiences();
+  const hasResearch = experiences.some(isResearch);
+
+  const order = ['about', 'experience', ...(hasResearch ? ['research'] : []), 'projects', 'skills', 'credentials', 'contact'];
+  const n = (id: string) => pad2(order.indexOf(id) + 1);
 
   return (
     <>
-      <SiteHeader name={profile.fullName} />
+      <SiteHeader />
 
       <main id="main">
         <Hero />
 
-        <Suspense fallback={<SectionSkeleton rows={1} />}>
-          <About />
-        </Suspense>
-
-        <Suspense fallback={<SectionSkeleton rows={2} cards />}>
-          <Skills />
-        </Suspense>
-
         <Suspense fallback={<SectionSkeleton rows={2} />}>
-          <Experience />
+          <About index={n('about')} />
         </Suspense>
 
+        <Suspense fallback={<SectionSkeleton rows={3} />}>
+          <Experience index={n('experience')} />
+        </Suspense>
+
+        {hasResearch ? (
+          <Suspense fallback={<SectionSkeleton rows={1} />}>
+            <Research index={n('research')} />
+          </Suspense>
+        ) : null}
+
         <Suspense fallback={<SectionSkeleton rows={2} cards />}>
-          <Projects />
+          <Projects index={n('projects')} />
+        </Suspense>
+
+        <Suspense fallback={<SectionSkeleton rows={3} cards />}>
+          <Skills index={n('skills')} />
+        </Suspense>
+
+        <Suspense fallback={<SectionSkeleton rows={3} cards />}>
+          <Credentials index={n('credentials')} />
         </Suspense>
 
         <Suspense fallback={<SectionSkeleton rows={1} />}>
-          <EducationSection />
-        </Suspense>
-
-        <Suspense fallback={<SectionSkeleton rows={2} cards />}>
-          <Certifications />
-        </Suspense>
-
-        <Suspense fallback={<SectionSkeleton rows={1} />}>
-          <Achievements />
-        </Suspense>
-
-        <Suspense fallback={<SectionSkeleton rows={1} cards />}>
-          <Contact />
+          <Contact index={n('contact')} />
         </Suspense>
       </main>
 

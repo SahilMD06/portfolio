@@ -25,6 +25,14 @@ export type Tag = (typeof TAGS)[keyof typeof TAGS];
 const DEFAULT_REVALIDATE = 3600;
 
 /**
+ * Bump whenever the *shape* of cached query results changes (a new column, a
+ * renamed field). The data cache outlives builds and deployments, so without
+ * this a new deploy can be served rows cached by the old code — e.g. records
+ * missing a newly added column.
+ */
+const CACHE_SCHEMA_VERSION = 'v2';
+
+/**
  * Wraps a data-layer read in Next's data cache, keyed and tagged so it can be
  * invalidated precisely.
  */
@@ -33,7 +41,10 @@ export function cachedQuery<TArgs extends unknown[], TResult>(
   tags: Tag[],
   fn: (...args: TArgs) => Promise<TResult>,
 ): (...args: TArgs) => Promise<TResult> {
-  return unstable_cache(fn, keyParts, { tags, revalidate: DEFAULT_REVALIDATE });
+  return unstable_cache(fn, [CACHE_SCHEMA_VERSION, ...keyParts], {
+    tags,
+    revalidate: DEFAULT_REVALIDATE,
+  });
 }
 
 /**

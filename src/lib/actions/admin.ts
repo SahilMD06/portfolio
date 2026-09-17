@@ -215,6 +215,7 @@ export async function saveExperience(_prev: ActionResult, formData: FormData): P
     responsibilities: d.responsibilities,
     achievements: d.achievements,
     technologies: d.technologies,
+    pipeline: d.pipeline,
     logoMediaId: d.logoMediaId ?? null,
     documentMediaId: d.documentMediaId ?? null,
     published: d.published,

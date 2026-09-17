@@ -11,8 +11,9 @@ import { cn } from '@/lib/utils';
 const INITIAL: ContactFormState = { status: 'idle' };
 
 const fieldClass =
-  'w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-fg placeholder:text-fg-subtle ' +
-  'transition-colors duration-150 focus:border-accent';
+  'w-full rounded-xl border border-border bg-bg/60 px-3.5 py-2.5 text-sm text-fg placeholder:text-fg-subtle ' +
+  'transition-[border-color,box-shadow] duration-200 hover:border-border-strong ' +
+  'focus:border-accent-line focus:shadow-[0_0_0_3px_var(--color-accent-subtle)] focus:outline-none';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -63,7 +64,7 @@ export function ContactForm() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="contact-name" className="mb-1.5 block text-sm font-medium">
             Name

@@ -3,19 +3,19 @@ export type Theme = 'light' | 'dark' | 'system';
 export const THEME_STORAGE_KEY = 'portfolio-theme';
 
 /**
- * Runs before first paint (injected into <head>), so the stored theme is
- * applied during the initial style pass and there is no flash of the wrong
- * colours. Kept as a string because it must execute synchronously, ahead of
- * hydration.
+ * Runs before first paint (injected into <head>).
+ *
+ * - Applies the stored theme so there is no flash of the wrong colours. Dark is
+ *   the default when nothing has been chosen.
+ * - Adds `js` to <html>. Scroll-reveal styles only hide content under `.js`, so
+ *   if scripts fail to run, everything is simply visible.
  */
-export const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t)}}catch(e){}})();`;
+export const THEME_INIT_SCRIPT = `(function(){var d=document.documentElement;d.classList.add('js');try{var t=localStorage.getItem('${THEME_STORAGE_KEY}');d.setAttribute('data-theme',t==='light'||t==='system'?t:'dark')}catch(e){d.setAttribute('data-theme','dark')}})();`;
 
 /**
- * The theme lives in localStorage and on <html data-theme>, both of which are
- * outside React. `useSyncExternalStore` is the correct way to read that, and it
- * avoids the cascading render an effect-plus-setState would cause.
+ * The theme lives in localStorage and on <html data-theme>, both outside React,
+ * so it is read with useSyncExternalStore rather than effect-plus-setState.
  */
-
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -24,7 +24,7 @@ function emit() {
 
 export function subscribeToTheme(onChange: () => void): () => void {
   listeners.add(onChange);
-  // 'storage' fires for changes made in other tabs, keeping them in sync.
+  // Keeps other tabs in sync.
   window.addEventListener('storage', onChange);
   return () => {
     listeners.delete(onChange);
@@ -35,32 +35,23 @@ export function subscribeToTheme(onChange: () => void): () => void {
 export function getThemeSnapshot(): Theme {
   try {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    return stored === 'dark' || stored === 'light' ? stored : 'system';
+    return stored === 'light' || stored === 'system' ? stored : 'dark';
   } catch {
-    // Storage can be unavailable (private mode, blocked cookies).
-    return 'system';
+    return 'dark';
   }
 }
 
-/**
- * The server cannot know the visitor's preference. Returning 'system' means no
- * toggle option is marked active during SSR; React re-reads the real value
- * immediately after hydration.
- */
+/** Matches the pre-paint default, so SSR and first client render agree. */
 export function getThemeServerSnapshot(): Theme {
-  return 'system';
+  return 'dark';
 }
 
 export function setTheme(theme: Theme): void {
-  const root = document.documentElement;
-  if (theme === 'system') root.removeAttribute('data-theme');
-  else root.setAttribute('data-theme', theme);
-
+  document.documentElement.setAttribute('data-theme', theme);
   try {
-    if (theme === 'system') localStorage.removeItem(THEME_STORAGE_KEY);
-    else localStorage.setItem(THEME_STORAGE_KEY, theme);
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
   } catch {
-    // The preference will not persist, but the page still switches.
+    // Preference will not persist, but the page still switches.
   }
   emit();
 }

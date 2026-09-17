@@ -208,6 +208,8 @@ export const experiences = pgTable(
     responsibilities: text('responsibilities').array().notNull().default([]),
     achievements: text('achievements').array().notNull().default([]),
     technologies: text('technologies').array().notNull().default([]),
+    /** Optional ordered stages rendered as a flow, e.g. for research work. */
+    pipeline: text('pipeline').array().notNull().default([]),
     logoMediaId: integer('logo_media_id').references(() => media.id, { onDelete: 'set null' }),
     documentMediaId: integer('document_media_id').references(() => media.id, {
       onDelete: 'set null',

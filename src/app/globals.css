@@ -1,87 +1,100 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   Design tokens
+   Design system
 
-   A near-monochrome palette with a single restrained accent. Colours are in
-   oklch so the light and dark ramps stay perceptually even, which keeps text
-   contrast predictable instead of hand-tuned per component.
+   Dark-first. A near-black base, slightly lifted surfaces, soft white text and
+   a single mint accent used sparingly (CTAs, active states, small highlights).
+   Every component reads from these tokens — nothing is styled ad hoc.
    ========================================================================== */
 
 @theme {
-  --color-bg: oklch(99% 0.002 265);
-  --color-surface: oklch(97.4% 0.004 265);
-  --color-surface-2: oklch(95.2% 0.005 265);
-  --color-fg: oklch(21% 0.012 265);
-  --color-fg-muted: oklch(48% 0.014 265);
-  --color-fg-subtle: oklch(52% 0.014 265);
-  --color-border: oklch(90.5% 0.006 265);
-  --color-border-strong: oklch(83% 0.008 265);
-  --color-accent: oklch(50% 0.155 258);
-  --color-accent-hover: oklch(44% 0.16 258);
-  --color-accent-fg: oklch(99% 0 0);
-  --color-accent-subtle: oklch(95.5% 0.025 258);
-  --color-danger: oklch(50% 0.19 25);
-  --color-danger-subtle: oklch(95.5% 0.03 25);
-  --color-success: oklch(48% 0.13 155);
-  --color-success-subtle: oklch(95.5% 0.04 155);
+  /* --- Colour (dark, the default) --------------------------------------- */
+  --color-bg: #08090b;
+  --color-surface: #0e1013;
+  --color-surface-2: #15181c;
+  --color-surface-3: #1c2025;
+  --color-fg: #f5f7fa;
+  --color-fg-muted: #a3a9b3;
+  --color-fg-subtle: #7e8591;
+  --color-border: rgb(255 255 255 / 0.075);
+  --color-border-strong: rgb(255 255 255 / 0.14);
+  --color-accent: #5fd9b4;
+  --color-accent-hover: #86e6c8;
+  --color-accent-fg: #04130d;
+  --color-accent-subtle: rgb(95 217 180 / 0.1);
+  --color-accent-line: rgb(95 217 180 / 0.35);
+  --color-danger: #f87171;
+  --color-danger-subtle: rgb(248 113 113 / 0.12);
+  --color-success: #5fd9b4;
+  --color-success-subtle: rgb(95 217 180 / 0.12);
 
-  --font-sans:
-    var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  /* --- Type ----------------------------------------------------------------- */
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  --radius-card: 0.75rem;
+  --text-display: clamp(2.6rem, 1.55rem + 4.2vw, 5rem);
+  --text-title: clamp(1.9rem, 1.35rem + 1.9vw, 2.9rem);
+  --text-lead: clamp(1.05rem, 0.98rem + 0.3vw, 1.2rem);
 
-  /* Content column: ~72ch of prose is the comfortable reading maximum. */
-  --container-content: 68rem;
+  /* --- Shape & layout ------------------------------------------------------- */
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+  --container-content: 72rem;
+
+  /* --- Motion --------------------------------------------------------------- */
+  --ease-out-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-micro: 180ms;
+  --duration-component: 520ms;
 }
 
 /*
- * Dark theme. `data-theme` is set by the pre-paint script in layout.tsx, so
- * there is never a flash of the wrong theme. The `:root:not([data-theme])`
- * guard lets an explicit choice beat the OS preference in both directions.
+ * Light theme. Chosen explicitly, or via "System" when the OS prefers light.
+ * The HTML element carries data-theme="light" | "dark" | "system", set before
+ * first paint by THEME_INIT_SCRIPT, so there is never a flash of the wrong theme.
  */
-@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
-
-:root[data-theme='dark'],
-:root:not([data-theme='light']) {
-  @media (prefers-color-scheme: dark) {
-    --color-bg: oklch(17.5% 0.008 265);
-    --color-surface: oklch(21% 0.011 265);
-    --color-surface-2: oklch(25% 0.013 265);
-    --color-fg: oklch(95.5% 0.004 265);
-    --color-fg-muted: oklch(72% 0.012 265);
-    --color-fg-subtle: oklch(62% 0.012 265);
-    --color-border: oklch(28.5% 0.012 265);
-    --color-border-strong: oklch(36% 0.014 265);
-    --color-accent: oklch(72% 0.13 258);
-    --color-accent-hover: oklch(78% 0.12 258);
-    --color-accent-fg: oklch(17.5% 0.02 265);
-    --color-accent-subtle: oklch(27% 0.05 258);
-    --color-danger: oklch(70% 0.16 25);
-    --color-danger-subtle: oklch(27% 0.06 25);
-    --color-success: oklch(72% 0.13 155);
-    --color-success-subtle: oklch(26% 0.05 155);
-  }
+:root[data-theme='light'] {
+  --color-bg: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef0f3;
+  --color-surface-3: #e4e7ec;
+  --color-fg: #0b0d10;
+  --color-fg-muted: #4a515c;
+  --color-fg-subtle: #626a76;
+  --color-border: rgb(11 13 16 / 0.09);
+  --color-border-strong: rgb(11 13 16 / 0.16);
+  --color-accent: #086b50;
+  --color-accent-hover: #065640;
+  --color-accent-fg: #ffffff;
+  --color-accent-subtle: rgb(11 122 92 / 0.09);
+  --color-accent-line: rgb(11 122 92 / 0.35);
+  --color-danger: #c2410c;
+  --color-danger-subtle: rgb(194 65 12 / 0.09);
+  --color-success: #0b7a5c;
+  --color-success-subtle: rgb(11 122 92 / 0.1);
 }
 
-:root[data-theme='dark'] {
-  --color-bg: oklch(17.5% 0.008 265);
-  --color-surface: oklch(21% 0.011 265);
-  --color-surface-2: oklch(25% 0.013 265);
-  --color-fg: oklch(95.5% 0.004 265);
-  --color-fg-muted: oklch(72% 0.012 265);
-  --color-fg-subtle: oklch(62% 0.012 265);
-  --color-border: oklch(28.5% 0.012 265);
-  --color-border-strong: oklch(36% 0.014 265);
-  --color-accent: oklch(72% 0.13 258);
-  --color-accent-hover: oklch(78% 0.12 258);
-  --color-accent-fg: oklch(17.5% 0.02 265);
-  --color-accent-subtle: oklch(27% 0.05 258);
-  --color-danger: oklch(70% 0.16 25);
-  --color-danger-subtle: oklch(27% 0.06 25);
-  --color-success: oklch(72% 0.13 155);
-  --color-success-subtle: oklch(26% 0.05 155);
+@media (prefers-color-scheme: light) {
+  :root[data-theme='system'] {
+    --color-bg: #f6f7f9;
+    --color-surface: #ffffff;
+    --color-surface-2: #eef0f3;
+    --color-surface-3: #e4e7ec;
+    --color-fg: #0b0d10;
+    --color-fg-muted: #4a515c;
+    --color-fg-subtle: #626a76;
+    --color-border: rgb(11 13 16 / 0.09);
+    --color-border-strong: rgb(11 13 16 / 0.16);
+    --color-accent: #086b50;
+    --color-accent-hover: #065640;
+    --color-accent-fg: #ffffff;
+    --color-accent-subtle: rgb(11 122 92 / 0.09);
+    --color-accent-line: rgb(11 122 92 / 0.35);
+    --color-danger: #c2410c;
+    --color-danger-subtle: rgb(194 65 12 / 0.09);
+    --color-success: #0b7a5c;
+    --color-success-subtle: rgb(11 122 92 / 0.1);
+  }
 }
 
 /* ==========================================================================
@@ -90,14 +103,24 @@
 
 @layer base {
   :root {
-    color-scheme: light;
-  }
-  :root[data-theme='dark'] {
     color-scheme: dark;
+    /* Grid line colour and noise strength, tuned per theme. */
+    --grid-line: rgb(255 255 255 / 0.045);
+    --grid-line-lit: rgb(95 217 180 / 0.35);
+    --noise-opacity: 0.035;
   }
-  :root:not([data-theme='light']) {
-    @media (prefers-color-scheme: dark) {
-      color-scheme: dark;
+  :root[data-theme='light'] {
+    color-scheme: light;
+    --grid-line: rgb(11 13 16 / 0.06);
+    --grid-line-lit: rgb(11 122 92 / 0.35);
+    --noise-opacity: 0.02;
+  }
+  @media (prefers-color-scheme: light) {
+    :root[data-theme='system'] {
+      color-scheme: light;
+      --grid-line: rgb(11 13 16 / 0.06);
+      --grid-line-lit: rgb(11 122 92 / 0.35);
+      --noise-opacity: 0.02;
     }
   }
 
@@ -107,25 +130,49 @@
 
   html {
     scroll-behavior: smooth;
-    /* Sticky header height, so anchor targets are not hidden behind it. */
-    scroll-padding-top: 5rem;
+    /* Leaves room for the floating header when jumping to an anchor. */
+    scroll-padding-top: 5.5rem;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
+    position: relative;
     background-color: var(--color-bg);
     color: var(--color-fg);
     font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.65;
+    font-feature-settings: 'ss01', 'cv11';
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
   }
 
-  /* A single, consistent, always-visible focus ring. */
+  /*
+   * Film grain. A tiny tiled SVG turbulence at very low opacity — felt rather
+   * than seen, and it removes the flat "default dark mode" look. Static, so it
+   * costs nothing per frame.
+   */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: var(--noise-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background: var(--color-accent-subtle);
+    color: var(--color-fg);
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-    border-radius: 2px;
+    outline-offset: 3px;
+    border-radius: 6px;
   }
 
   h1,
@@ -133,14 +180,14 @@
   h3,
   h4 {
     text-wrap: balance;
-    letter-spacing: -0.02em;
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
 
   p {
     text-wrap: pretty;
   }
 
-  /* Respect the OS setting: disable motion rather than merely shortening it. */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -157,43 +204,500 @@
 }
 
 /* ==========================================================================
-   Utilities
+   Components
    ========================================================================== */
 
 @layer components {
-  /*
-   * Section reveal. Transform + opacity only, so it runs on the compositor and
-   * never triggers layout. `animation-timeline: view()` degrades to "already
-   * visible" in browsers without scroll-driven animations — no JS, no observer,
-   * and no risk of content being stuck invisible.
+  /* --- Typography roles ---------------------------------------------------- */
+
+  .t-display {
+    font-size: var(--text-display);
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+    font-weight: 600;
+  }
+
+  .t-title {
+    font-size: var(--text-title);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+  }
+
+  .t-lead {
+    font-size: var(--text-lead);
+    line-height: 1.6;
+    color: var(--color-fg-muted);
+  }
+
+  /* Small technical label: section numbers, dates, metadata. */
+  .t-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-subtle);
+  }
+
+  /* --- Surfaces ------------------------------------------------------------ */
+
+  .surface {
+    position: relative;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.025), transparent 40%),
+      var(--color-surface);
+    transition:
+      border-color var(--duration-micro) ease,
+      transform 320ms var(--ease-out-premium),
+      background-color var(--duration-micro) ease;
+  }
+
+  .surface-interactive:hover {
+    border-color: var(--color-border-strong);
+    transform: translateY(-2px);
+  }
+
+  /* --- Signature effect: cursor spotlight ---------------------------------
+   *
+   * Inside any [data-spotlight-group], a soft light follows the cursor and
+   * catches the borders of nearby cards, so a whole grid seems lit by one
+   * source. Coordinates are written to --spot-x / --spot-y by
+   * SpotlightController (one rAF-throttled listener for the whole page).
+   * Only transform-free gradients are animated; there is no layout work.
    */
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .reveal {
-        animation: reveal-in linear both;
-        animation-timeline: view();
-        animation-range: entry 0% entry 42%;
-      }
+
+  [data-spotlight] {
+    --spot-x: -1000px;
+    --spot-y: -1000px;
+  }
+
+  .spotlight::before,
+  .spotlight::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+
+  /* Illuminated border ring. */
+  .spotlight::before {
+    padding: 1px;
+    background: radial-gradient(
+      420px circle at var(--spot-x) var(--spot-y),
+      var(--color-accent-line),
+      transparent 42%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  /* Faint interior wash. */
+  .spotlight::after {
+    background: radial-gradient(
+      520px circle at var(--spot-x) var(--spot-y),
+      var(--color-accent-subtle),
+      transparent 45%
+    );
+    opacity: 0;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [data-spotlight-group]:hover .spotlight::before {
+      opacity: 1;
+    }
+    [data-spotlight-group]:hover .spotlight:hover::after {
+      opacity: 0.6;
     }
   }
 
-  @keyframes reveal-in {
+  /* --- Buttons ------------------------------------------------------------- */
+
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding: 0 1.15rem;
+    border-radius: 999px;
+    font-size: 0.925rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    transition:
+      background-color var(--duration-micro) ease,
+      border-color var(--duration-micro) ease,
+      color var(--duration-micro) ease,
+      box-shadow var(--duration-micro) ease,
+      transform var(--duration-micro) var(--ease-out-premium);
+  }
+  .btn:active {
+    transform: translateY(1px) scale(0.99);
+  }
+  .btn:disabled {
+    pointer-events: none;
+    opacity: 0.55;
+  }
+  .btn-sm {
+    height: 2.25rem;
+    padding: 0 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-accent-fg);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.08) inset,
+      0 8px 24px -12px var(--color-accent-line);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-hover);
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.12) inset,
+      0 10px 30px -10px var(--color-accent-line);
+  }
+
+  .btn-secondary {
+    background: var(--color-surface-2);
+    border-color: var(--color-border);
+    color: var(--color-fg);
+  }
+  .btn-secondary:hover {
+    background: var(--color-surface-3);
+    border-color: var(--color-border-strong);
+  }
+
+  .btn-ghost {
+    color: var(--color-fg-muted);
+  }
+  .btn-ghost:hover {
+    color: var(--color-fg);
+    background: var(--color-surface-2);
+  }
+
+  .btn-danger {
+    background: var(--color-danger);
+    color: #fff;
+  }
+  .btn-danger:hover {
+    opacity: 0.9;
+  }
+
+  /* Arrow that nudges toward its destination on hover. */
+  .arrow-nudge {
+    transition: transform var(--duration-micro) var(--ease-out-premium);
+  }
+  :is(a, button, .group):hover > .arrow-nudge,
+  .group:hover .arrow-nudge {
+    transform: translateX(3px);
+  }
+  :is(a, button, .group):hover > .arrow-nudge-diag,
+  .group:hover .arrow-nudge-diag {
+    transform: translate(2px, -2px);
+  }
+
+  /* --- Links --------------------------------------------------------------- */
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition:
+      background-size 260ms var(--ease-out-premium),
+      color var(--duration-micro) ease;
+  }
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
+
+  /* --- Chips --------------------------------------------------------------- */
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: 1.75rem;
+    padding: 0 0.6rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-2);
+    color: var(--color-fg-muted);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    transition:
+      color var(--duration-micro) ease,
+      border-color var(--duration-micro) ease,
+      background-color var(--duration-micro) ease;
+  }
+  .chip-mono {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.01em;
+  }
+  .chip:hover,
+  .group:hover .chip-lift {
+    color: var(--color-fg);
+    border-color: var(--color-border-strong);
+  }
+
+  /* --- Background: technical grid ------------------------------------------ */
+
+  .grid-backdrop {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    background-position: center top;
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 30%, #000 30%, transparent 78%);
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 30%, #000 30%, transparent 78%);
+  }
+
+  /* The same grid, brighter, revealed only in a circle around the cursor. */
+  .grid-backdrop-lit {
+    background-image:
+      linear-gradient(to right, var(--grid-line-lit) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line-lit) 1px, transparent 1px);
+    -webkit-mask-image: radial-gradient(260px circle at var(--spot-x) var(--spot-y), #000, transparent 70%);
+    mask-image: radial-gradient(260px circle at var(--spot-x) var(--spot-y), #000, transparent 70%);
+    opacity: 0;
+    transition: opacity 400ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    [data-spotlight-group]:hover .grid-backdrop-lit {
+      opacity: 0.55;
+    }
+  }
+
+  /* --- Motion: hero entrance ----------------------------------------------
+   *
+   * Pure CSS so it runs before hydration. Each element sets --enter-delay.
+   */
+
+  .enter {
+    animation: enter-up var(--duration-component) var(--ease-out-premium) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+  .enter-fade {
+    animation: enter-fade 900ms ease both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+
+  @keyframes enter-up {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(14px);
+      filter: blur(4px);
     }
     to {
       opacity: 1;
       transform: none;
+      filter: blur(0);
+    }
+  }
+  @keyframes enter-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 
-  /* Long-form content rendered from the database. */
+  /* --- Motion: scroll reveals ---------------------------------------------
+   *
+   * RevealObserver marks [data-reveal] elements as they enter the viewport.
+   * The hidden state only applies once `html.js` exists, so content is never
+   * invisible if JavaScript fails. Stagger via --i on siblings.
+   */
+
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 640ms var(--ease-out-premium),
+      transform 640ms var(--ease-out-premium);
+    transition-delay: calc(min(var(--i, 0), 8) * 70ms);
+  }
+  .js [data-reveal][data-revealed] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* --- Status dot ---------------------------------------------------------- */
+
+  .status-dot {
+    position: relative;
+    display: inline-block;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+  }
+  .status-dot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--color-accent);
+    animation: ping 2.4s var(--ease-out-premium) infinite;
+  }
+  @keyframes ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    70%,
+    100% {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+
+  /* --- Pipeline connector: a light pulse that runs once on reveal ---------- */
+
+  .pipeline-connector {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-border-strong);
+  }
+  .pipeline-connector::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    transform: translateX(-100%);
+  }
+  [data-revealed] .pipeline-connector::after {
+    animation: pulse-run 1.4s var(--ease-out-premium) both;
+    animation-delay: calc(0.5s + var(--step, 0) * 180ms);
+  }
+  @keyframes pulse-run {
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Long-form text from the database. */
   .prose-content {
     line-height: 1.75;
     color: var(--color-fg-muted);
   }
   .prose-content > p + p {
     margin-top: 1rem;
+  }
+}
+
+/* ==========================================================================
+   Progressive enhancements (scroll-driven, no JavaScript)
+   ========================================================================== */
+
+/* Header: transparent at the top, settles into a solid glass bar on scroll. */
+.site-header-bar {
+  background-color: color-mix(in oklab, var(--color-bg) 72%, transparent);
+  border-color: var(--color-border);
+}
+@supports (animation-timeline: scroll()) {
+  .site-header-bar {
+    animation: header-settle linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 140px;
+  }
+}
+@keyframes header-settle {
+  from {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+  to {
+    background-color: color-mix(in oklab, var(--color-bg) 72%, transparent);
+    border-color: var(--color-border);
+    box-shadow: 0 10px 30px -18px rgb(0 0 0 / 0.6);
+  }
+}
+
+/* Reading progress along the top edge. Hidden where unsupported. */
+.scroll-progress {
+  display: none;
+}
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    display: block;
+    transform-origin: 0 50%;
+    animation: progress-grow linear both;
+    animation-timeline: scroll(root);
+  }
+}
+@keyframes progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Timeline rail fills as the experience section scrolls past. */
+.timeline-progress {
+  transform-origin: 50% 0;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .timeline-progress {
+      animation: rail-fill linear both;
+      animation-timeline: --timeline;
+      animation-range: entry 20% exit 40%;
+    }
+    .timeline-root {
+      view-timeline-name: --timeline;
+    }
+  }
+}
+@keyframes rail-fill {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+  .status-dot::after {
+    display: none;
+  }
+}
+
+/* Vertical pipeline connector for narrow screens. */
+@layer components {
+  .pipeline-connector-v::after {
+    background: linear-gradient(180deg, transparent, var(--color-accent), transparent);
+    transform: translateY(-100%);
+  }
+  [data-revealed] .pipeline-connector-v::after {
+    animation-name: pulse-run-v;
+  }
+  @keyframes pulse-run-v {
+    to {
+      transform: translateY(100%);
+    }
   }
 }

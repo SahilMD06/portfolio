@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from 'react';
 
 import { cn, outboundLinkProps } from '@/lib/utils';
 
 /**
- * Shared presentational primitives. All server components — none of them need
- * interactivity, so none of them ship JavaScript.
+ * Shared presentational primitives, built on the tokens and component classes
+ * in globals.css. All server components — none of them ship JavaScript.
  */
 
 /* -------------------------------------------------------------------------- */
@@ -15,26 +15,8 @@ import { cn, outboundLinkProps } from '@/lib/utils';
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
-const BUTTON_BASE =
-  'inline-flex items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap ' +
-  'transition-[background-color,border-color,color,opacity] duration-150 ' +
-  'disabled:pointer-events-none disabled:opacity-55';
-
-const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-accent text-accent-fg hover:bg-accent-hover',
-  secondary: 'border border-border-strong bg-surface text-fg hover:bg-surface-2',
-  ghost: 'text-fg-muted hover:bg-surface-2 hover:text-fg',
-  danger: 'bg-danger text-white hover:opacity-90',
-};
-
-const BUTTON_SIZES: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-sm',
-  md: 'h-10 px-4 text-sm',
-  lg: 'h-11 px-5 text-[0.95rem]',
-};
-
 export function buttonClass(variant: ButtonVariant = 'primary', size: ButtonSize = 'md') {
-  return cn(BUTTON_BASE, BUTTON_VARIANTS[variant], BUTTON_SIZES[size]);
+  return cn('btn', `btn-${variant}`, size === 'sm' && 'btn-sm');
 }
 
 export function Button({
@@ -84,46 +66,71 @@ export function LinkButton({
 /* -------------------------------------------------------------------------- */
 
 export function Container({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn('mx-auto w-full max-w-content px-5 sm:px-6', className)}>{children}</div>;
+  return (
+    <div className={cn('mx-auto w-full max-w-content px-5 sm:px-8', className)}>{children}</div>
+  );
 }
 
 export function Section({
   id,
   className,
   children,
+  spotlight = false,
 }: {
   id?: string;
   className?: string;
   children: ReactNode;
+  /** Enables the cursor spotlight for cards inside this section. */
+  spotlight?: boolean;
 }) {
   return (
-    <section id={id} className={cn('scroll-mt-20 py-14 sm:py-20', className)}>
+    <section
+      id={id}
+      className={cn('relative scroll-mt-20 py-[clamp(4.5rem,3rem+6vw,8rem)]', className)}
+      {...(spotlight ? { 'data-spotlight-group': '' } : {})}
+    >
       <Container>{children}</Container>
     </section>
   );
 }
 
+/**
+ * Section header: a numbered mono label, a title, and an optional lead.
+ * The numbering gives the page an editorial rhythm and makes position obvious.
+ */
 export function SectionHeading({
+  index,
   eyebrow,
   title,
   description,
   action,
+  className,
 }: {
+  index?: string;
   eyebrow?: string;
   title: string;
   description?: string;
   action?: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4 sm:mb-10">
+    <div
+      data-reveal
+      className={cn(
+        'mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-5 sm:mb-14',
+        className,
+      )}
+    >
       <div className="max-w-2xl">
         {eyebrow ? (
-          <p className="mb-2 text-xs font-semibold tracking-[0.14em] text-accent uppercase">
-            {eyebrow}
+          <p className="t-label mb-4 flex items-center gap-3">
+            {index ? <span className="text-accent">{index}</span> : null}
+            {index ? <span className="h-px w-8 bg-border-strong" aria-hidden="true" /> : null}
+            <span>{eyebrow}</span>
           </p>
         ) : null}
-        <h2 className="text-2xl font-semibold sm:text-[1.75rem]">{title}</h2>
-        {description ? <p className="mt-2 text-fg-muted">{description}</p> : null}
+        <h2 className="t-title">{title}</h2>
+        {description ? <p className="t-lead mt-4 max-w-xl">{description}</p> : null}
       </div>
       {action}
     </div>
@@ -134,16 +141,41 @@ export function SectionHeading({
 /* Surfaces                                                                   */
 /* -------------------------------------------------------------------------- */
 
-export function Card({ className, children }: { className?: string; children: ReactNode }) {
+export function Card({
+  className,
+  children,
+  interactive = false,
+  spotlight = false,
+  reveal = false,
+  index,
+  as: Tag = 'div',
+}: {
+  className?: string;
+  children: ReactNode;
+  /** Lifts slightly and strengthens its border on hover. */
+  interactive?: boolean;
+  /** Participates in the cursor spotlight of its section. */
+  spotlight?: boolean;
+  /** Fades in when scrolled into view. */
+  reveal?: boolean;
+  /** Stagger position when revealed alongside siblings. */
+  index?: number;
+  as?: 'div' | 'article' | 'li';
+}) {
   return (
-    <div
+    <Tag
       className={cn(
-        'rounded-card border border-border bg-surface transition-colors duration-150',
+        'surface',
+        interactive && 'surface-interactive',
+        spotlight && 'spotlight',
         className,
       )}
+      {...(spotlight ? { 'data-spotlight': '' } : {})}
+      {...(reveal ? { 'data-reveal': '' } : {})}
+      style={index !== undefined ? ({ '--i': index } as CSSProperties) : undefined}
     >
       {children}
-    </div>
+    </Tag>
   );
 }
 
@@ -158,14 +190,14 @@ export function Badge({
 }) {
   const tones = {
     default: 'border-border bg-surface-2 text-fg-muted',
-    accent: 'border-transparent bg-accent-subtle text-accent',
-    success: 'border-transparent bg-success-subtle text-success',
+    accent: 'border-accent-line bg-accent-subtle text-accent',
+    success: 'border-accent-line bg-success-subtle text-success',
     danger: 'border-transparent bg-danger-subtle text-danger',
   } as const;
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium',
+        'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium',
         tones[tone],
         className,
       )}
@@ -175,13 +207,9 @@ export function Badge({
   );
 }
 
-/** Small monospace chip used for technology lists. */
+/** Monospace chip used for technology lists. */
 export function TechChip({ children }: { children: ReactNode }) {
-  return (
-    <span className="rounded-md border border-border bg-surface-2 px-2 py-0.5 font-mono text-[0.7rem] text-fg-muted">
-      {children}
-    </span>
-  );
+  return <span className="chip chip-mono chip-lift">{children}</span>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -191,7 +219,7 @@ export function TechChip({ children }: { children: ReactNode }) {
 export function Skeleton({ className }: { className?: string }) {
   return (
     <div
-      className={cn('animate-pulse rounded-md bg-surface-2', className)}
+      className={cn('animate-pulse rounded-lg bg-surface-2', className)}
       aria-hidden="true"
     />
   );

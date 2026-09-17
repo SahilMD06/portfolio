@@ -1,112 +1,156 @@
 import Image from 'next/image';
+import type { CSSProperties } from 'react';
 
-import { Badge, Section, SectionHeading, TechChip } from '@/components/ui';
-import { FileIcon } from '@/components/ui/icons';
+import { Section, SectionHeading, TechChip } from '@/components/ui';
+import { ArrowUpRightIcon, CheckIcon } from '@/components/ui/icons';
 import { getExperiences } from '@/lib/services/content';
 import { mediaUrl } from '@/lib/services/media';
-import { formatDateRange, outboundLinkProps, toParagraphs } from '@/lib/utils';
+import { isResearch } from '@/lib/portfolio';
+import { formatPartialDate, outboundLinkProps, toParagraphs } from '@/lib/utils';
 
-export async function Experience() {
-  const experiences = await getExperiences();
+/**
+ * Editorial timeline. Dates sit in their own column on wide screens; a thin
+ * rail runs between the columns and fills as the section scrolls past (CSS
+ * scroll-driven animation — static where unsupported or with reduced motion).
+ * Research roles are shown in their own section instead.
+ */
+export async function Experience({ index }: { index: string }) {
+  const experiences = (await getExperiences()).filter((item) => !isResearch(item));
   if (experiences.length === 0) return null;
 
   return (
-    <Section id="experience" className="reveal">
-      <SectionHeading eyebrow="Experience" title="Where I've worked" />
+    <Section id="experience">
+      <SectionHeading
+        index={index}
+        eyebrow="Experience"
+        title="Internships & roles."
+      />
 
-      {/* Timeline: a single ruled line with a marker per role. */}
-      <ol className="relative space-y-8 border-l border-border pl-6 sm:pl-8">
-        {experiences.map((item) => {
+      <ol className="timeline-root relative">
+        {/* Rail + progress fill. */}
+        <span
+          aria-hidden="true"
+          className="absolute top-2 bottom-2 left-[5px] w-px bg-border md:left-[calc(11rem+5px)]"
+        />
+        <span
+          aria-hidden="true"
+          className="timeline-progress absolute top-2 bottom-2 left-[5px] w-px bg-gradient-to-b from-accent via-accent/60 to-transparent md:left-[calc(11rem+5px)]"
+        />
+
+        {experiences.map((item, i) => {
           const logo = mediaUrl(item.logo);
           const document = mediaUrl(item.document);
           const paragraphs = toParagraphs(item.description);
 
           return (
-            <li key={item.id} className="relative">
+            <li
+              key={item.id}
+              data-reveal=""
+              style={{ '--i': Math.min(i, 3) } as CSSProperties}
+              className="relative grid grid-cols-1 gap-3 pb-12 pl-8 last:pb-0 md:grid-cols-[11rem_minmax(0,1fr)] md:gap-10 md:pl-0"
+            >
+              {/* Node on the rail. */}
               <span
-                className="absolute top-1.5 -left-[1.6rem] h-2.5 w-2.5 rounded-full border-2 border-bg bg-accent sm:-left-[2.1rem]"
                 aria-hidden="true"
+                className={
+                  'absolute top-[0.45rem] left-0 h-[11px] w-[11px] rounded-full border-2 border-bg md:left-[11rem] ' +
+                  (item.isCurrent ? 'bg-accent ring-4 ring-accent/15' : 'bg-border-strong')
+                }
               />
 
-              <div className="flex flex-wrap items-start gap-3">
-                {logo ? (
-                  <Image
-                    src={logo}
-                    alt={`${item.company} logo`}
-                    width={36}
-                    height={36}
-                    className="mt-0.5 h-9 w-9 rounded-md border border-border object-contain"
-                  />
-                ) : null}
-
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-semibold">{item.role}</h3>
-                  <p className="mt-0.5 text-sm text-fg-muted">
-                    {item.company}
-                    {item.location ? ` · ${item.location}` : ''}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  {item.isCurrent ? <Badge tone="success">Current</Badge> : null}
-                  <Badge>{item.employmentType}</Badge>
-                </div>
+              <div className="md:pt-0.5 md:pr-6 md:text-right">
+                {/* Each end of the range stays whole; wrapping only happens at the dash. */}
+                <p className="t-label text-fg-muted">
+                  <span className="whitespace-nowrap">{formatPartialDate(item.startDate)}</span>{' '}
+                  <span className="whitespace-nowrap">
+                    — {item.isCurrent ? 'Present' : formatPartialDate(item.endDate) || '—'}
+                  </span>
+                </p>
+                <p className="mt-1.5 text-xs text-fg-subtle">
+                  {[item.employmentType, item.location].filter(Boolean).join(' · ')}
+                </p>
               </div>
 
-              <p className="mt-2 font-mono text-xs text-fg-subtle">
-                {formatDateRange(item.startDate, item.endDate, item.isCurrent)}
-              </p>
-
-              {paragraphs.length > 0 ? (
-                <div className="prose-content mt-3 text-sm">
-                  {paragraphs.map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>
-                  ))}
+              <div className="min-w-0 md:pl-6">
+                <div className="flex items-start gap-3">
+                  {logo ? (
+                    <Image
+                      src={logo}
+                      alt={`${item.company} logo`}
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 shrink-0 rounded-lg border border-border object-contain"
+                    />
+                  ) : null}
+                  <div className="min-w-0">
+                    <h3 className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[1.15rem] leading-snug">
+                      {item.role}
+                      {item.isCurrent ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-accent-line bg-accent-subtle px-2 py-0.5 text-[0.7rem] font-medium text-accent">
+                          <span className="status-dot" aria-hidden="true" />
+                          Current
+                        </span>
+                      ) : null}
+                    </h3>
+                    <p className="mt-1 text-[0.95rem] text-fg-muted">{item.company}</p>
+                  </div>
                 </div>
-              ) : null}
 
-              {item.responsibilities.length > 0 ? (
-                <ul className="mt-3 space-y-1.5 text-sm text-fg-muted">
-                  {item.responsibilities.map((entry, index) => (
-                    <li key={index} className="flex gap-2.5">
-                      <span className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-border-strong" aria-hidden="true" />
-                      <span>{entry}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+                {paragraphs.length > 0 ? (
+                  <div className="prose-content mt-4 max-w-2xl text-[0.95rem]">
+                    {paragraphs.map((paragraph, p) => (
+                      <p key={p}>{paragraph}</p>
+                    ))}
+                  </div>
+                ) : null}
 
-              {item.achievements.length > 0 ? (
-                <ul className="mt-3 space-y-1.5 text-sm">
-                  {item.achievements.map((entry, index) => (
-                    <li key={index} className="flex gap-2.5 text-fg">
-                      <span className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-accent" aria-hidden="true" />
-                      <span>{entry}</span>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+                {item.responsibilities.length > 0 ? (
+                  <ul className="mt-4 max-w-2xl space-y-2.5">
+                    {item.responsibilities.map((entry, r) => (
+                      <li key={r} className="flex gap-3 text-[0.925rem] leading-relaxed text-fg-muted">
+                        <span
+                          aria-hidden="true"
+                          className="mt-[0.7rem] h-px w-3 shrink-0 bg-border-strong"
+                        />
+                        <span>{entry}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
 
-              {item.technologies.length > 0 ? (
-                <ul className="mt-3.5 flex flex-wrap gap-1.5">
-                  {item.technologies.map((tech) => (
-                    <li key={tech}>
-                      <TechChip>{tech}</TechChip>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+                {item.achievements.length > 0 ? (
+                  <ul className="mt-4 max-w-2xl space-y-2">
+                    {item.achievements.map((entry, a) => (
+                      <li key={a} className="flex gap-3 text-[0.925rem] leading-relaxed text-fg">
+                        <CheckIcon
+                          width="15"
+                          height="15"
+                          className="mt-1 shrink-0 text-accent"
+                        />
+                        <span>{entry}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
 
-              {document ? (
-                <a
-                  href={document}
-                  {...outboundLinkProps(document)}
-                  className="mt-3 inline-flex items-center gap-1.5 text-sm text-accent hover:underline"
-                >
-                  <FileIcon width="14" height="14" />
-                  View certificate
-                </a>
-              ) : null}
+                {item.technologies.length > 0 || document ? (
+                  <div className="mt-5 flex flex-wrap items-center gap-2">
+                    {item.technologies.map((tech) => (
+                      <TechChip key={tech}>{tech}</TechChip>
+                    ))}
+                    {document ? (
+                      <a
+                        href={document}
+                        {...outboundLinkProps(document)}
+                        className="group ml-1 inline-flex items-center gap-1 text-sm text-accent"
+                      >
+                        <span className="link-underline">Certificate</span>
+                        <ArrowUpRightIcon width="14" height="14" className="arrow-nudge-diag arrow-nudge" />
+                      </a>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
             </li>
           );
         })}

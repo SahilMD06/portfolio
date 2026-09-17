@@ -183,6 +183,125 @@ export const DownIcon = (p: IconProps) => (
   </Icon>
 );
 
+export const ArrowUpRightIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M7 17 17 7" />
+    <path d="M8 7h9v9" />
+  </Icon>
+);
+
+export const ArrowUpIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 19V5" />
+    <path d="m5 12 7-7 7 7" />
+  </Icon>
+);
+
+export const CodeIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="m16 18 6-6-6-6" />
+    <path d="m8 6-6 6 6 6" />
+  </Icon>
+);
+
+export const CpuIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="6" y="6" width="12" height="12" rx="2" />
+    <path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4" />
+  </Icon>
+);
+
+export const SparkIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3v4M12 17v4M3 12h4M17 12h4" />
+    <path d="m6.3 6.3 2.1 2.1M15.6 15.6l2.1 2.1M6.3 17.7l2.1-2.1M15.6 8.4l2.1-2.1" />
+  </Icon>
+);
+
+export const ServerIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="4" width="18" height="7" rx="2" />
+    <rect x="3" y="13" width="18" height="7" rx="2" />
+    <path d="M7 7.5h.01M7 16.5h.01" />
+  </Icon>
+);
+
+export const DatabaseIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <ellipse cx="12" cy="5" rx="8" ry="3" />
+    <path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5" />
+    <path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" />
+  </Icon>
+);
+
+export const WrenchIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4Z" />
+  </Icon>
+);
+
+export const GraduationIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="m22 9-10-5L2 9l10 5 10-5Z" />
+    <path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5" />
+  </Icon>
+);
+
+export const TargetIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="12" cy="12" r="5" />
+    <circle cx="12" cy="12" r="1" />
+  </Icon>
+);
+
+export const CompassIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="m15.5 8.5-2 5-5 2 2-5 5-2Z" />
+  </Icon>
+);
+
+export const FlaskIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3" />
+    <path d="M7 15h10" />
+  </Icon>
+);
+
+export const AwardIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="9" r="6" />
+    <path d="m8.2 13.6-1.2 7.4 5-3 5 3-1.2-7.4" />
+  </Icon>
+);
+
+export const BriefcaseIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="7" width="18" height="13" rx="2" />
+    <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18" />
+  </Icon>
+);
+
+export const LayersIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="m12 3 9 5-9 5-9-5 9-5Z" />
+    <path d="m3 13 9 5 9-5" />
+  </Icon>
+);
+
+/** Picks a glyph for a skill category from its name — presentation only. */
+export function CategoryIcon({ name, ...props }: { name: string } & IconProps) {
+  const n = name.toLowerCase();
+  if (/(generative|agent|llm|rag)/.test(n)) return <SparkIcon {...props} />;
+  if (/(ai|machine|ml|learning|vision)/.test(n)) return <CpuIcon {...props} />;
+  if (/(data|database|sql)/.test(n)) return <DatabaseIcon {...props} />;
+  if (/(web|backend|frontend|api|server)/.test(n)) return <ServerIcon {...props} />;
+  if (/(tool|devops|cloud)/.test(n)) return <WrenchIcon {...props} />;
+  if (/(language|programming)/.test(n)) return <CodeIcon {...props} />;
+  return <LayersIcon {...props} />;
+}
+
 /** Maps a social_links.platform value to an icon. */
 export function SocialIcon({ platform, ...props }: { platform: string } & IconProps) {
   switch (platform.toLowerCase()) {
