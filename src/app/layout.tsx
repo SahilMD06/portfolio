@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Instrument_Serif, Space_Grotesk } from 'next/font/google';
 
 import './globals.css';
 import { SiteAnalytics } from '@/components/site/analytics';
-import { RevealObserver, SpotlightController } from '@/components/site/motion';
-import { THEME_INIT_SCRIPT } from '@/components/site/theme-store';
+import { BackToTop, CountUpNumbers, RevealObserver, SpotlightController } from '@/components/site/motion';
+import { APPEARANCE_INIT_SCRIPT } from '@/components/site/appearance-store';
 import { env } from '@/lib/env';
 import { getProfile, getSiteSettings } from '@/lib/services/content';
 import { getMedia, mediaUrl } from '@/lib/services/media';
@@ -25,6 +25,24 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-geist-mono',
+});
+
+/**
+ * Two alternative heading faces a visitor can pick in the appearance panel.
+ * Body copy never changes, so each choice costs a single extra file, loaded
+ * the same self-hosted way.
+ */
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: '400',
+  display: 'swap',
+  variable: '--font-instrument',
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-space',
 });
 
 export const viewport: Viewport = {
@@ -84,14 +102,22 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable}`} data-theme="dark" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${geist.variable} ${geistMono.variable} ${instrumentSerif.variable} ${spaceGrotesk.variable}`}
+      data-theme="dark"
+      data-accent="mint"
+      data-motion="on"
+      data-font="geist"
+      suppressHydrationWarning
+    >
       <head>
         {/*
-          Must run before first paint so the stored theme is applied during the
-          initial style pass. suppressHydrationWarning above covers the
-          data-theme attribute and `js` class it sets on <html>.
+          Must run before first paint so the stored theme, accent, motion and
+          font are applied during the initial style pass. suppressHydrationWarning
+          above covers the data attributes and `js` class it sets on <html>.
         */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: APPEARANCE_INIT_SCRIPT }} />
       </head>
       <body className="min-h-dvh antialiased">
         <a
@@ -103,6 +129,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <RevealObserver />
         <SpotlightController />
+        <CountUpNumbers />
+        <BackToTop />
         <Suspense fallback={null}>
           <SiteAnalytics />
         </Suspense>

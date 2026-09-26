@@ -40,6 +40,10 @@ export async function Contact({ index }: { index: string }) {
           className="surface spotlight relative isolate overflow-hidden"
         >
           <div aria-hidden="true" className="absolute inset-0 -z-10">
+            <div className="aurora" aria-hidden="true">
+              <span />
+              <span />
+            </div>
             <div className="grid-backdrop opacity-70" />
             <div className="grid-backdrop grid-backdrop-lit" />
             <div

@@ -116,8 +116,22 @@ immediately. Every section below sits behind its own `<Suspense>` boundary with
 a matching skeleton, so the server **streams** each one as its query resolves
 rather than holding the document until the slowest query finishes.
 
-Client JavaScript is limited to what genuinely needs interactivity: the theme
-toggle, the mobile navigation, and the forms. The rest is server-rendered.
+Client JavaScript is limited to what genuinely needs interactivity: the
+appearance panel, the mobile navigation, the scroll/pointer effects, and the
+forms. The rest is server-rendered.
+
+### Appearance
+
+Visitors can set four things from the panel in the header. Each one is written
+to `<html>` and to `localStorage`, and applied before first paint by
+`APPEARANCE_INIT_SCRIPT`, so there is no flash of the wrong look.
+
+| Attribute | Values | Effect |
+| --- | --- | --- |
+| `data-theme` | `dark` (default), `light`, `system` | Colour scheme. |
+| `data-accent` | `mint` (default), `iris`, `azure`, `amber`, `rose` | Accent palette. Each has a light tone for dark backgrounds and a deep tone for light ones, both above 4.5:1. |
+| `data-motion` | `on`, `off` | Defaults to `off` when the OS asks for reduced motion. `off` stops every animation, including the aurora, marquee, counters and parallax. |
+| `data-font` | `geist` (default), `serif`, `grotesk` | Display face for headings only; body text never changes, so each choice costs one extra font file. |
 
 ---
 

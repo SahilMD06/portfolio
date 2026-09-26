@@ -10,9 +10,9 @@ import {
   setTheme,
   subscribeToTheme,
   type Theme,
-} from './theme-store';
+} from './appearance-store';
 
-export { THEME_INIT_SCRIPT, THEME_STORAGE_KEY } from './theme-store';
+export { THEME_STORAGE_KEY } from './appearance-store';
 export type { Theme };
 
 const OPTIONS: { value: Theme; label: string; Icon: typeof SunIcon }[] = [

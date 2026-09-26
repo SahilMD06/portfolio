@@ -44,7 +44,7 @@ export function ProjectVisual({
             fill
             sizes={sizes}
             priority={priority}
-            className="object-cover"
+            className="media-zoom object-cover"
           />
         ) : (
           <>

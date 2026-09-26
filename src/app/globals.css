@@ -4,9 +4,64 @@
    Design system
 
    Dark-first. A near-black base, slightly lifted surfaces, soft white text and
-   a single mint accent used sparingly (CTAs, active states, small highlights).
+   a single accent used sparingly (CTAs, active states, small highlights).
    Every component reads from these tokens — nothing is styled ad hoc.
+
+   Three things are chosen by the visitor and stored on <html> before first
+   paint (see appearance-store.ts):
+     data-theme  dark | light | system
+     data-accent mint | iris | azure | amber | rose
+     data-motion on | off
+     data-font   geist | serif | grotesk
    ========================================================================== */
+
+/* --- Accent palettes ------------------------------------------------------
+ *
+ * Each accent supplies a light tone (used on dark backgrounds) and a deep tone
+ * (used on light backgrounds), plus the same colour as raw channels so tints
+ * can be mixed with an alpha. Every deep tone clears 4.5:1 on the light
+ * surface, every light tone clears it on the dark one.
+ */
+:root {
+  --accent-d: #5fd9b4;
+  --accent-d-hover: #86e6c8;
+  --accent-d-rgb: 95 217 180;
+  --accent-l: #086b50;
+  --accent-l-hover: #065640;
+  --accent-l-rgb: 8 107 80;
+}
+:root[data-accent='iris'] {
+  --accent-d: #a794ff;
+  --accent-d-hover: #c2b5ff;
+  --accent-d-rgb: 167 148 255;
+  --accent-l: #533bc4;
+  --accent-l-hover: #4230a1;
+  --accent-l-rgb: 83 59 196;
+}
+:root[data-accent='azure'] {
+  --accent-d: #5fb6f9;
+  --accent-d-hover: #8ccbfb;
+  --accent-d-rgb: 95 182 249;
+  --accent-l: #0b60b8;
+  --accent-l-hover: #084d94;
+  --accent-l-rgb: 11 96 184;
+}
+:root[data-accent='amber'] {
+  --accent-d: #f3c169;
+  --accent-d-hover: #f8d492;
+  --accent-d-rgb: 243 193 105;
+  --accent-l: #855507;
+  --accent-l-hover: #6b4406;
+  --accent-l-rgb: 133 85 7;
+}
+:root[data-accent='rose'] {
+  --accent-d: #ff8fa6;
+  --accent-d-hover: #ffb1c1;
+  --accent-d-rgb: 255 143 166;
+  --accent-l: #b01049;
+  --accent-l-hover: #920c3c;
+  --accent-l-rgb: 176 16 73;
+}
 
 @theme {
   /* --- Colour (dark, the default) --------------------------------------- */
@@ -19,11 +74,11 @@
   --color-fg-subtle: #7e8591;
   --color-border: rgb(255 255 255 / 0.075);
   --color-border-strong: rgb(255 255 255 / 0.14);
-  --color-accent: #5fd9b4;
-  --color-accent-hover: #86e6c8;
-  --color-accent-fg: #04130d;
-  --color-accent-subtle: rgb(95 217 180 / 0.1);
-  --color-accent-line: rgb(95 217 180 / 0.35);
+  --color-accent: var(--accent-d);
+  --color-accent-hover: var(--accent-d-hover);
+  --color-accent-fg: #06080a;
+  --color-accent-subtle: rgb(var(--accent-d-rgb) / 0.1);
+  --color-accent-line: rgb(var(--accent-d-rgb) / 0.35);
   --color-danger: #f87171;
   --color-danger-subtle: rgb(248 113 113 / 0.12);
   --color-success: #5fd9b4;
@@ -51,7 +106,8 @@
 /*
  * Light theme. Chosen explicitly, or via "System" when the OS prefers light.
  * The HTML element carries data-theme="light" | "dark" | "system", set before
- * first paint by THEME_INIT_SCRIPT, so there is never a flash of the wrong theme.
+ * first paint by APPEARANCE_INIT_SCRIPT, so there is never a flash of the
+ * wrong theme.
  */
 :root[data-theme='light'] {
   --color-bg: #f6f7f9;
@@ -63,11 +119,11 @@
   --color-fg-subtle: #626a76;
   --color-border: rgb(11 13 16 / 0.09);
   --color-border-strong: rgb(11 13 16 / 0.16);
-  --color-accent: #086b50;
-  --color-accent-hover: #065640;
+  --color-accent: var(--accent-l);
+  --color-accent-hover: var(--accent-l-hover);
   --color-accent-fg: #ffffff;
-  --color-accent-subtle: rgb(11 122 92 / 0.09);
-  --color-accent-line: rgb(11 122 92 / 0.35);
+  --color-accent-subtle: rgb(var(--accent-l-rgb) / 0.09);
+  --color-accent-line: rgb(var(--accent-l-rgb) / 0.35);
   --color-danger: #c2410c;
   --color-danger-subtle: rgb(194 65 12 / 0.09);
   --color-success: #0b7a5c;
@@ -85,11 +141,11 @@
     --color-fg-subtle: #626a76;
     --color-border: rgb(11 13 16 / 0.09);
     --color-border-strong: rgb(11 13 16 / 0.16);
-    --color-accent: #086b50;
-    --color-accent-hover: #065640;
+    --color-accent: var(--accent-l);
+    --color-accent-hover: var(--accent-l-hover);
     --color-accent-fg: #ffffff;
-    --color-accent-subtle: rgb(11 122 92 / 0.09);
-    --color-accent-line: rgb(11 122 92 / 0.35);
+    --color-accent-subtle: rgb(var(--accent-l-rgb) / 0.09);
+    --color-accent-line: rgb(var(--accent-l-rgb) / 0.35);
     --color-danger: #c2410c;
     --color-danger-subtle: rgb(194 65 12 / 0.09);
     --color-success: #0b7a5c;
@@ -106,20 +162,22 @@
     color-scheme: dark;
     /* Grid line colour and noise strength, tuned per theme. */
     --grid-line: rgb(255 255 255 / 0.045);
-    --grid-line-lit: rgb(95 217 180 / 0.35);
+    --grid-line-lit: rgb(var(--accent-d-rgb) / 0.35);
     --noise-opacity: 0.035;
+    /* Headings follow the chosen display font; body text never changes. */
+    --font-display: var(--font-sans);
   }
   :root[data-theme='light'] {
     color-scheme: light;
     --grid-line: rgb(11 13 16 / 0.06);
-    --grid-line-lit: rgb(11 122 92 / 0.35);
+    --grid-line-lit: rgb(var(--accent-l-rgb) / 0.35);
     --noise-opacity: 0.02;
   }
   @media (prefers-color-scheme: light) {
     :root[data-theme='system'] {
       color-scheme: light;
       --grid-line: rgb(11 13 16 / 0.06);
-      --grid-line-lit: rgb(11 122 92 / 0.35);
+      --grid-line-lit: rgb(var(--accent-l-rgb) / 0.35);
       --noise-opacity: 0.02;
     }
   }
@@ -187,20 +245,20 @@
   p {
     text-wrap: pretty;
   }
+}
 
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
-  }
+/* ==========================================================================
+   Display font options
+
+   Body copy stays in the UI sans; only display headings swap, so a choice
+   never costs more than one extra font file.
+   ========================================================================== */
+
+:root[data-font='serif'] {
+  --font-display: var(--font-instrument), 'Iowan Old Style', Georgia, serif;
+}
+:root[data-font='grotesk'] {
+  --font-display: var(--font-space), var(--font-sans);
 }
 
 /* ==========================================================================
@@ -211,6 +269,7 @@
   /* --- Typography roles ---------------------------------------------------- */
 
   .t-display {
+    font-family: var(--font-display);
     font-size: var(--text-display);
     line-height: 1.02;
     letter-spacing: -0.045em;
@@ -218,10 +277,30 @@
   }
 
   .t-title {
+    font-family: var(--font-display);
     font-size: var(--text-title);
     line-height: 1.08;
     letter-spacing: -0.035em;
     font-weight: 600;
+  }
+
+  /* The serif has one weight and much tighter default fit. */
+  :root[data-font='serif'] :is(.t-display, .t-title) {
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    line-height: 1.06;
+  }
+  :root[data-font='grotesk'] :is(.t-display, .t-title) {
+    letter-spacing: -0.035em;
+    font-weight: 500;
+  }
+
+  /* Font-name previews in the appearance panel. */
+  .font-display-serif {
+    font-family: var(--font-instrument), 'Iowan Old Style', Georgia, serif;
+  }
+  .font-display-grotesk {
+    font-family: var(--font-space), var(--font-sans);
   }
 
   .t-lead {
@@ -257,7 +336,7 @@
 
   .surface-interactive:hover {
     border-color: var(--color-border-strong);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
   }
 
   /* --- Signature effect: cursor spotlight ---------------------------------
@@ -334,12 +413,16 @@
     font-weight: 500;
     white-space: nowrap;
     border: 1px solid transparent;
+    overflow: hidden;
     transition:
       background-color var(--duration-micro) ease,
       border-color var(--duration-micro) ease,
       color var(--duration-micro) ease,
       box-shadow var(--duration-micro) ease,
       transform var(--duration-micro) var(--ease-out-premium);
+  }
+  .btn:hover {
+    transform: translateY(-1px);
   }
   .btn:active {
     transform: translateY(1px) scale(0.99);
@@ -354,6 +437,24 @@
     font-size: 0.85rem;
   }
 
+  /* A light sweeps across the button as the pointer arrives. */
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 0.22), transparent 80%);
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+  .btn:hover::after {
+    animation: sheen 750ms var(--ease-out-premium);
+  }
+  @keyframes sheen {
+    to {
+      transform: translateX(120%);
+    }
+  }
+
   .btn-primary {
     background: var(--color-accent);
     color: var(--color-accent-fg);
@@ -365,7 +466,7 @@
     background: var(--color-accent-hover);
     box-shadow:
       0 0 0 1px rgb(255 255 255 / 0.12) inset,
-      0 10px 30px -10px var(--color-accent-line);
+      0 12px 32px -10px var(--color-accent-line);
   }
 
   .btn-secondary {
@@ -438,6 +539,7 @@
     transition:
       color var(--duration-micro) ease,
       border-color var(--duration-micro) ease,
+      transform var(--duration-micro) var(--ease-out-premium),
       background-color var(--duration-micro) ease;
   }
   .chip-mono {
@@ -449,6 +551,9 @@
   .group:hover .chip-lift {
     color: var(--color-fg);
     border-color: var(--color-border-strong);
+  }
+  .chip:hover {
+    transform: translateY(-2px);
   }
 
   /* --- Background: technical grid ------------------------------------------ */
@@ -482,6 +587,51 @@
     }
   }
 
+  /* --- Background: drifting aurora ----------------------------------------
+   *
+   * Two blurred accent clouds that drift behind the hero and the contact
+   * panel. Transform and opacity only, so they stay on the compositor.
+   */
+
+  .aurora {
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .aurora span {
+    position: absolute;
+    display: block;
+    width: 46rem;
+    height: 46rem;
+    border-radius: 999px;
+    filter: blur(90px);
+    opacity: 0.5;
+    background: radial-gradient(circle, var(--color-accent-subtle), transparent 68%);
+    animation: drift 26s var(--ease-out-premium) infinite alternate;
+    will-change: transform;
+  }
+  .aurora span:nth-child(1) {
+    top: -18%;
+    left: -10%;
+  }
+  .aurora span:nth-child(2) {
+    top: 10%;
+    right: -14%;
+    animation-duration: 34s;
+    animation-delay: -12s;
+    background: radial-gradient(circle, var(--color-accent-line), transparent 72%);
+    opacity: 0.22;
+  }
+  @keyframes drift {
+    from {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    to {
+      transform: translate3d(6%, 8%, 0) scale(1.18);
+    }
+  }
+
   /* --- Motion: hero entrance ----------------------------------------------
    *
    * Pure CSS so it runs before hydration. Each element sets --enter-delay.
@@ -494,6 +644,13 @@
   .enter-fade {
     animation: enter-fade 900ms ease both;
     animation-delay: var(--enter-delay, 0ms);
+  }
+
+  /* Word-by-word entrance for the one display heading that deserves it. */
+  .enter-words > span {
+    display: inline-block;
+    animation: enter-word 760ms var(--ease-out-premium) both;
+    animation-delay: calc(var(--enter-delay, 0ms) + var(--w, 0) * 90ms);
   }
 
   @keyframes enter-up {
@@ -516,12 +673,25 @@
       opacity: 1;
     }
   }
+  @keyframes enter-word {
+    from {
+      opacity: 0;
+      transform: translateY(0.35em) rotate(1.5deg);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
 
   /* --- Motion: scroll reveals ---------------------------------------------
    *
    * RevealObserver marks [data-reveal] elements as they enter the viewport.
    * The hidden state only applies once `html.js` exists, so content is never
-   * invisible if JavaScript fails. Stagger via --i on siblings.
+   * invisible if JavaScript fails. Stagger via --i on siblings; direction via
+   * data-reveal="up" | "left" | "right" | "scale".
    */
 
   .js [data-reveal] {
@@ -529,12 +699,37 @@
     transform: translateY(18px);
     transition:
       opacity 640ms var(--ease-out-premium),
-      transform 640ms var(--ease-out-premium);
+      transform 640ms var(--ease-out-premium),
+      filter 640ms var(--ease-out-premium);
     transition-delay: calc(min(var(--i, 0), 8) * 70ms);
+  }
+  .js [data-reveal='left'] {
+    transform: translate3d(-26px, 0, 0);
+  }
+  .js [data-reveal='right'] {
+    transform: translate3d(26px, 0, 0);
+  }
+  .js [data-reveal='scale'] {
+    transform: scale(0.965);
+    filter: blur(6px);
   }
   .js [data-reveal][data-revealed] {
     opacity: 1;
     transform: none;
+    filter: none;
+  }
+
+  /* A rule under each section heading that draws itself in. */
+  .heading-rule {
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-accent-line), transparent);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 900ms var(--ease-out-premium) 120ms;
+  }
+  [data-revealed] .heading-rule {
+    transform: scaleX(1);
   }
 
   /* --- Status dot ---------------------------------------------------------- */
@@ -565,6 +760,78 @@
       transform: scale(2.6);
       opacity: 0;
     }
+  }
+
+  /* --- Timeline marker ----------------------------------------------------- */
+
+  .timeline-dot {
+    position: relative;
+    border-radius: 999px;
+    background: var(--color-surface-3);
+    transition:
+      background-color 400ms ease,
+      box-shadow 400ms ease;
+  }
+  [data-revealed] .timeline-dot {
+    background: var(--color-accent);
+    box-shadow: 0 0 0 4px var(--color-accent-subtle);
+  }
+
+  /* --- Marquee: a slow band of technologies -------------------------------- */
+
+  .marquee {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee-track {
+    display: flex;
+    flex-shrink: 0;
+    gap: 2.5rem;
+    padding-right: 2.5rem;
+    min-width: 100%;
+    animation: marquee 42s linear infinite;
+    will-change: transform;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* --- Media zoom ---------------------------------------------------------- */
+
+  .media-zoom {
+    transition: transform 700ms var(--ease-out-premium);
+  }
+  .group:hover .media-zoom {
+    transform: scale(1.04);
+  }
+
+  /* --- Back to top --------------------------------------------------------- */
+
+  .to-top {
+    position: fixed;
+    right: clamp(1rem, 0.5rem + 1.5vw, 2rem);
+    bottom: clamp(1rem, 0.5rem + 1.5vw, 2rem);
+    z-index: 40;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition:
+      opacity 300ms ease,
+      transform 300ms var(--ease-out-premium),
+      visibility 300ms;
+  }
+  .to-top[data-visible] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
   }
 
   /* --- Pipeline connector: a light pulse that runs once on reveal ---------- */
@@ -656,15 +923,20 @@
   transform-origin: 50% 0;
 }
 @supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .timeline-progress {
-      animation: rail-fill linear both;
-      animation-timeline: --timeline;
-      animation-range: entry 20% exit 40%;
-    }
-    .timeline-root {
-      view-timeline-name: --timeline;
-    }
+  .timeline-progress {
+    animation: rail-fill linear both;
+    animation-timeline: --timeline;
+    animation-range: entry 20% exit 40%;
+  }
+  .timeline-root {
+    view-timeline-name: --timeline;
+  }
+
+  /* Backdrops drift slightly slower than the page — a light parallax. */
+  .parallax-slow {
+    animation: parallax linear both;
+    animation-timeline: view();
+    animation-range: cover;
   }
 }
 @keyframes rail-fill {
@@ -675,14 +947,87 @@
     transform: scaleY(1);
   }
 }
+@keyframes parallax {
+  from {
+    transform: translateY(-4%);
+  }
+  to {
+    transform: translateY(6%);
+  }
+}
+
+/* ==========================================================================
+   Motion preference
+
+   <html data-motion> is set before first paint: "off" when the visitor has
+   asked for less motion (or the OS has), "on" otherwise. Everything animated
+   above collapses to a plain state when motion is off; the media query keeps
+   that true even if JavaScript never runs.
+   ========================================================================== */
+
+:root[data-motion='off'] *,
+:root[data-motion='off'] *::before,
+:root[data-motion='off'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  animation-delay: 0ms !important;
+  transition-duration: 0.01ms !important;
+  transition-delay: 0ms !important;
+}
+:root[data-motion='off'] {
+  scroll-behavior: auto;
+}
+:root[data-motion='off'] .js [data-reveal],
+:root[data-motion='off'] .enter,
+:root[data-motion='off'] .enter-words > span,
+:root[data-motion='off'] .enter-fade {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+:root[data-motion='off'] .status-dot::after,
+:root[data-motion='off'] .btn::after {
+  display: none !important;
+}
+:root[data-motion='off'] .aurora {
+  display: none !important;
+}
+:root[data-motion='off'] .marquee-track,
+:root[data-motion='off'] .parallax-slow,
+:root[data-motion='off'] .timeline-progress {
+  animation: none !important;
+}
+:root[data-motion='off'] .heading-rule {
+  transform: none !important;
+}
+:root[data-motion='off'] .timeline-progress {
+  transform: scaleY(1);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .js [data-reveal] {
+  :root:not([data-motion='on']) {
+    scroll-behavior: auto;
+  }
+  :root:not([data-motion='on']) *,
+  :root:not([data-motion='on']) *::before,
+  :root:not([data-motion='on']) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  :root:not([data-motion='on']) .js [data-reveal] {
     opacity: 1;
     transform: none;
+    filter: none;
   }
-  .status-dot::after {
+  :root:not([data-motion='on']) .status-dot::after,
+  :root:not([data-motion='on']) .aurora {
     display: none;
+  }
+  :root:not([data-motion='on']) .marquee-track,
+  :root:not([data-motion='on']) .parallax-slow,
+  :root:not([data-motion='on']) .timeline-progress {
+    animation: none;
   }
 }
 

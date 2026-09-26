@@ -42,7 +42,7 @@ export async function About({ index }: { index: string }) {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         {paragraphs.length > 0 ? (
-          <Card spotlight reveal index={0} className="group p-6 sm:p-8 lg:col-span-7 lg:row-span-2">
+          <Card spotlight reveal="scale" index={0} className="group p-6 sm:p-8 lg:col-span-7 lg:row-span-2">
             <ModuleHeader icon={<CompassIcon width="14" height="14" />} label="Summary" />
             <div className="prose-content text-[1.02rem]">
               {paragraphs.map((paragraph, i) => (
@@ -55,7 +55,7 @@ export async function About({ index }: { index: string }) {
         ) : null}
 
         {primaryEducation ? (
-          <Card spotlight reveal index={1} className="group p-6 sm:p-7 lg:col-span-5">
+          <Card spotlight reveal="scale" index={1} className="group p-6 sm:p-7 lg:col-span-5">
             <ModuleHeader icon={<GraduationIcon width="14" height="14" />} label="Education" />
             <div className="flex items-end justify-between gap-6">
               <div className="min-w-0">
@@ -83,14 +83,14 @@ export async function About({ index }: { index: string }) {
         ) : null}
 
         {profile.currentFocus ? (
-          <Card spotlight reveal index={2} className="group p-6 sm:p-7 lg:col-span-5">
+          <Card spotlight reveal="scale" index={2} className="group p-6 sm:p-7 lg:col-span-5">
             <ModuleHeader icon={<TargetIcon width="14" height="14" />} label="Current focus" />
             <p className="leading-relaxed text-fg-muted">{profile.currentFocus}</p>
           </Card>
         ) : null}
 
         {careerInterests.length > 0 || profile.technicalInterests ? (
-          <Card spotlight reveal index={3} className="group p-6 sm:p-7 lg:col-span-6">
+          <Card spotlight reveal="scale" index={3} className="group p-6 sm:p-7 lg:col-span-6">
             <ModuleHeader icon={<CompassIcon width="14" height="14" />} label="Interests" />
             {careerInterests.length > 0 ? (
               <ul className="flex flex-wrap gap-2">
@@ -110,7 +110,7 @@ export async function About({ index }: { index: string }) {
         ) : null}
 
         {highlights.length > 0 ? (
-          <Card spotlight reveal index={4} className="group p-6 sm:p-7 lg:col-span-6">
+          <Card spotlight reveal="scale" index={4} className="group p-6 sm:p-7 lg:col-span-6">
             <ModuleHeader icon={<AwardIcon width="14" height="14" />} label="Highlights" />
             <ol className="space-y-3">
               {highlights.map((item, i) => (

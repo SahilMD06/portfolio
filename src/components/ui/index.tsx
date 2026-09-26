@@ -130,6 +130,7 @@ export function SectionHeading({
           </p>
         ) : null}
         <h2 className="t-title">{title}</h2>
+        <span className="heading-rule mt-5 w-28" aria-hidden="true" />
         {description ? <p className="t-lead mt-4 max-w-xl">{description}</p> : null}
       </div>
       {action}
@@ -156,8 +157,8 @@ export function Card({
   interactive?: boolean;
   /** Participates in the cursor spotlight of its section. */
   spotlight?: boolean;
-  /** Fades in when scrolled into view. */
-  reveal?: boolean;
+  /** Fades in when scrolled into view; a direction picks the movement. */
+  reveal?: boolean | 'up' | 'left' | 'right' | 'scale';
   /** Stagger position when revealed alongside siblings. */
   index?: number;
   as?: 'div' | 'article' | 'li';
@@ -171,7 +172,7 @@ export function Card({
         className,
       )}
       {...(spotlight ? { 'data-spotlight': '' } : {})}
-      {...(reveal ? { 'data-reveal': '' } : {})}
+      {...(reveal ? { 'data-reveal': typeof reveal === 'string' ? reveal : '' } : {})}
       style={index !== undefined ? ({ '--i': index } as CSSProperties) : undefined}
     >
       {children}

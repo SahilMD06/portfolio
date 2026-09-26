@@ -10,6 +10,7 @@ import {
   getProfile,
   getPublishedProjects,
   getResumeMedia,
+  getSkillGroups,
   getSocialLinks,
 } from '@/lib/services/content';
 import { mediaUrl } from '@/lib/services/media';
@@ -50,7 +51,11 @@ export async function Hero() {
               'radial-gradient(60% 55% at 50% -10%, var(--color-accent-subtle), transparent 70%)',
           }}
         />
-        <div className="grid-backdrop" />
+        <div className="aurora" aria-hidden="true">
+          <span />
+          <span />
+        </div>
+        <div className="grid-backdrop parallax-slow" />
         <div className="grid-backdrop grid-backdrop-lit" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-bg" />
       </div>
@@ -68,8 +73,13 @@ export async function Hero() {
               </p>
             ) : null}
 
-            <h1 className="t-display enter" style={delay(220)}>
-              {profile.fullName}
+            <h1 className="t-display enter-words" style={delay(220)}>
+              {profile.fullName.split(/\s+/).map((word, index) => (
+                <span key={`${word}-${index}`} style={{ '--w': index } as CSSProperties}>
+                  {word}
+                  {index < profile.fullName.split(/\s+/).length - 1 ? ' ' : null}
+                </span>
+              ))}
             </h1>
 
             {headlineParts.length > 0 ? (
@@ -153,6 +163,12 @@ export async function Hero() {
           </Suspense>
         </div>
       </Container>
+
+      <div className="enter-fade mt-14 border-t border-border py-5" style={delay(900)}>
+        <Suspense fallback={<div className="h-7" aria-hidden="true" />}>
+          <TechMarquee />
+        </Suspense>
+      </div>
     </section>
   );
 }
@@ -246,7 +262,7 @@ async function HeroStats() {
         <div key={stat.label} className="flex flex-col gap-2.5">
           <dt className="t-label order-2">{stat.label}</dt>
           <dd className="order-1 text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] leading-none font-semibold tracking-tight tabular-nums">
-            {stat.value}
+            <span data-count={stat.value}>{stat.value}</span>
             {stat.suffix ? (
               <span className="ml-1.5 text-[0.45em] font-normal tracking-normal text-fg-subtle">
                 {stat.suffix}
@@ -256,5 +272,34 @@ async function HeroStats() {
         </div>
       ))}
     </dl>
+  );
+}
+
+/**
+ * A slow band of the technologies in the database, looping under the hero.
+ * The second copy is aria-hidden so the list is announced once, and the
+ * animation pauses on hover and stops entirely when motion is off.
+ */
+async function TechMarquee() {
+  const groups = await getSkillGroups();
+  const names = groups.flatMap((group) => group.skills.map((skill) => skill.name));
+  if (names.length < 6) return null;
+
+  const row = (hidden: boolean) => (
+    <ul className="marquee-track" aria-hidden={hidden || undefined}>
+      {names.map((name) => (
+        <li key={name} className="flex items-center gap-2.5 text-sm whitespace-nowrap text-fg-subtle">
+          <span className="h-1 w-1 rounded-full bg-accent/70" aria-hidden="true" />
+          {name}
+        </li>
+      ))}
+    </ul>
+  );
+
+  return (
+    <div className="marquee" aria-label="Technologies I work with">
+      {row(false)}
+      {row(true)}
+    </div>
   );
 }

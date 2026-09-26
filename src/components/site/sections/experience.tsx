@@ -53,8 +53,8 @@ export async function Experience({ index }: { index: string }) {
               <span
                 aria-hidden="true"
                 className={
-                  'absolute top-[0.45rem] left-0 h-[11px] w-[11px] rounded-full border-2 border-bg md:left-[11rem] ' +
-                  (item.isCurrent ? 'bg-accent ring-4 ring-accent/15' : 'bg-border-strong')
+                  'timeline-dot absolute top-[0.45rem] left-0 h-[11px] w-[11px] border-2 border-bg md:left-[11rem] ' +
+                  (item.isCurrent ? 'ring-4 ring-accent/15' : '')
                 }
               />
 

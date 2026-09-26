@@ -316,3 +316,31 @@ export function SocialIcon({ platform, ...props }: { platform: string } & IconPr
       return <LinkIcon {...props} />;
   }
 }
+
+export const SlidersIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h10M18 18h2" />
+    <circle cx="16" cy="6" r="2" />
+    <circle cx="10" cy="12" r="2" />
+    <circle cx="16" cy="18" r="2" />
+  </Icon>
+);
+
+export const MotionIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 8h8M3 16h5" />
+    <path d="m13 5 7 7-7 7" />
+  </Icon>
+);
+
+export const TypeIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 6V5h16v1M12 5v14M9 19h6" />
+  </Icon>
+);
+
+export const DropletIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3s6 5.7 6 10a6 6 0 0 1-12 0c0-4.3 6-10 6-10Z" />
+  </Icon>
+);

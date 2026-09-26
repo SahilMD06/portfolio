@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import { ThemeToggle } from './theme-toggle';
+import { AppearancePanel } from './appearance-panel';
 import { ArrowRightIcon, CloseIcon, MenuIcon } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 
@@ -128,9 +128,7 @@ export function SiteHeaderClient({ name, items }: { name: string; items: NavItem
           })}
         </ul>
 
-        <div className="hidden sm:block">
-          <ThemeToggle />
-        </div>
+        <AppearancePanel className="hidden sm:block" />
 
         <Link href={href('contact')} className="btn btn-primary btn-sm hidden lg:inline-flex">
           Let&apos;s talk
@@ -180,8 +178,8 @@ export function SiteHeaderClient({ name, items }: { name: string; items: NavItem
             ))}
           </ul>
           <div className="mt-2 flex items-center justify-between border-t border-border px-3 pt-3 pb-1">
-            <span className="t-label">Theme</span>
-            <ThemeToggle />
+            <span className="t-label">Appearance</span>
+            <AppearancePanel />
           </div>
         </div>
       ) : null}
