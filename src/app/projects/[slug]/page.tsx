@@ -221,37 +221,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   <p className="text-fg-muted">No detailed write-up for this project yet.</p>
                 )}
 
-                {project.screenshots.length > 0 ? (
-                  <section className="mt-14">
-                    <h2 className="t-label mb-5">Screenshots</h2>
-                    <div className="space-y-8">
-                      {project.screenshots.map((shot) => {
-                        const url = mediaUrl(shot.media);
-                        if (!url) return null;
-                        return (
-                          <figure key={shot.id} data-reveal="">
-                            <div className="overflow-hidden rounded-card border border-border bg-surface-2">
-                              <Image
-                                src={url}
-                                alt={shot.caption || shot.media.alt || `${project.title} screenshot`}
-                                width={shot.media.width ?? 1600}
-                                height={shot.media.height ?? 900}
-                                sizes="(min-width: 1024px) 48rem, 100vw"
-                                className="h-auto w-full"
-                                loading="lazy"
-                              />
-                            </div>
-                            {shot.caption ? (
-                              <figcaption className="mt-3 text-sm text-fg-subtle">
-                                {shot.caption}
-                              </figcaption>
-                            ) : null}
-                          </figure>
-                        );
-                      })}
-                    </div>
-                  </section>
-                ) : null}
               </div>
 
               <aside className="lg:sticky lg:top-24 lg:h-fit" data-reveal="">
@@ -297,6 +266,37 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                 </dl>
               </aside>
             </div>
+
+
+            {project.screenshots.length > 0 ? (
+              <section className="mt-16" data-reveal="">
+                <h2 className="t-label mb-5">Screenshots</h2>
+                <div className="space-y-10">
+                  {project.screenshots.map((shot) => {
+                    const url = mediaUrl(shot.media);
+                    if (!url) return null;
+                    return (
+                      <figure key={shot.id} data-reveal="scale">
+                        <div className="overflow-hidden rounded-card border border-border bg-surface-2">
+                          <Image
+                            src={url}
+                            alt={shot.caption || shot.media.alt || `${project.title} screenshot`}
+                            width={shot.media.width ?? 1600}
+                            height={shot.media.height ?? 900}
+                            sizes="(min-width: 1024px) 72rem, 100vw"
+                            className="h-auto w-full"
+                            loading="lazy"
+                          />
+                        </div>
+                        {shot.caption ? (
+                          <figcaption className="mt-3 text-sm text-fg-subtle">{shot.caption}</figcaption>
+                        ) : null}
+                      </figure>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
 
             {previous || next ? (
               <nav
