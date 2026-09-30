@@ -24,6 +24,12 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     /**
+     * Project screenshots are dense UI text, which the default quality of 75
+     * visibly softens. 90 costs a few tens of kilobytes per image and keeps
+     * small type legible.
+     */
+    qualities: [75, 90],
+    /**
      * Remote images are only ever served from a configured storage origin.
      * Vercel Blob mints a per-store subdomain that is not known until the store
      * exists, so that host family is allow-listed by pattern; every other

@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
+import { ScreenshotGallery } from '@/components/site/screenshot-gallery';
 import { Container, TechChip } from '@/components/ui';
 import {
   ArrowLeftIcon,
@@ -192,6 +193,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                     alt={project.image?.alt || `${project.title} preview`}
                     fill
                     sizes="(min-width: 1024px) 72rem, 100vw"
+                    quality={90}
                     className="object-cover"
                     priority
                   />
@@ -264,30 +266,23 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             {project.screenshots.length > 0 ? (
               <section className="mt-16" data-reveal="">
                 <h2 className="t-label mb-5">Screenshots</h2>
-                <div className="space-y-10">
-                  {project.screenshots.map((shot) => {
-                    const url = mediaUrl(shot.media);
-                    if (!url) return null;
-                    return (
-                      <figure key={shot.id} data-reveal="scale">
-                        <div className="overflow-hidden rounded-card border border-border bg-surface-2">
-                          <Image
-                            src={url}
-                            alt={shot.caption || shot.media.alt || `${project.title} screenshot`}
-                            width={shot.media.width ?? 1600}
-                            height={shot.media.height ?? 900}
-                            sizes="(min-width: 1024px) 72rem, 100vw"
-                            className="h-auto w-full"
-                            loading="lazy"
-                          />
-                        </div>
-                        {shot.caption ? (
-                          <figcaption className="mt-3 text-sm text-fg-subtle">{shot.caption}</figcaption>
-                        ) : null}
-                      </figure>
-                    );
-                  })}
-                </div>
+                <ScreenshotGallery
+                  items={project.screenshots
+                    .map((shot) => {
+                      const url = mediaUrl(shot.media);
+                      return url
+                        ? {
+                            id: shot.id,
+                            url,
+                            alt: shot.caption || shot.media.alt || `${project.title} screenshot`,
+                            caption: shot.caption,
+                            width: shot.media.width,
+                            height: shot.media.height,
+                          }
+                        : null;
+                    })
+                    .filter((item) => item !== null)}
+                />
               </section>
             ) : null}
 
