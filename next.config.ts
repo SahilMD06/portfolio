@@ -22,7 +22,12 @@ const nextConfig: NextConfig = {
         },
       }),
   images: {
-    formats: ['image/avif', 'image/webp'],
+    /**
+     * WebP only. AVIF wins on file size for photographs, but it crushes the
+     * fine text in UI screenshots — a 1696px capture came back at 21KB against
+     * WebP's 46KB, and the difference was visible as blur.
+     */
+    formats: ['image/webp'],
     /**
      * Project screenshots are dense UI text, which the default quality of 75
      * visibly softens. 90 costs a few tens of kilobytes per image and keeps
