@@ -145,9 +145,10 @@ export function ScreenshotGallery({ items }: { items: GalleryItem[] }) {
             width={active.width ?? 1600}
             height={active.height ?? 900}
             sizes="92vw"
-            quality={90}
+            quality={95}
             priority
-            className="max-h-[72vh] w-auto max-w-full rounded-card border border-border object-contain"
+            style={{ maxWidth: active.width ? `min(100%, ${active.width}px)` : '100%' }}
+            className="max-h-[72vh] w-auto rounded-card border border-border object-contain"
           />
 
           <div className="flex w-full max-w-6xl items-center gap-4">

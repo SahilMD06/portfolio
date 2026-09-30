@@ -17,7 +17,7 @@ import {
 import { env } from '@/lib/env';
 import { getProfile, getProjectBySlug, getPublishedProjects } from '@/lib/services/content';
 import { mediaUrl } from '@/lib/services/media';
-import { displayUrl, pad2 } from '@/lib/portfolio';
+import { displayUrl, pad2, sharpWidth } from '@/lib/portfolio';
 import { formatDateRange, outboundLinkProps, toParagraphs } from '@/lib/utils';
 
 const delay = (ms: number) => ({ '--enter-delay': `${ms}ms` }) as CSSProperties;
@@ -84,6 +84,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const next = position >= 0 && position < all.length - 1 ? all[position + 1] : undefined;
 
   const cover = mediaUrl(project.image);
+  const coverWidth = sharpWidth(project.image?.width);
   const paragraphs = toParagraphs(project.description);
   const dateRange = formatDateRange(project.startDate, project.endDate);
   const links = [project.demoUrl, project.githubUrl].filter((url): url is string => Boolean(url));
@@ -186,15 +187,19 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           <Container className="py-[clamp(3rem,2rem+4vw,6rem)]">
             {/* No placeholder when a project has no imagery: the write-up simply leads. */}
             {cover ? (
-              <div className="enter group" style={delay(360)}>
-                <div className="relative aspect-[16/9] overflow-hidden rounded-card border border-border bg-surface-2">
+              <div
+                className="enter group mx-auto"
+                style={{ ...delay(360), maxWidth: `${coverWidth}px` }}
+              >
+                <div className="overflow-hidden rounded-card border border-border bg-surface-2">
                   <Image
                     src={cover}
                     alt={project.image?.alt || `${project.title} preview`}
-                    fill
-                    sizes="(min-width: 1024px) 72rem, 100vw"
-                    quality={90}
-                    className="object-cover"
+                    width={project.image?.width ?? 1600}
+                    height={project.image?.height ?? 900}
+                    sizes={`(max-width: ${coverWidth}px) 100vw, ${coverWidth}px`}
+                    quality={95}
+                    className="h-auto w-full"
                     priority
                   />
                 </div>

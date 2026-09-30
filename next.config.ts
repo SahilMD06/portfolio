@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
      * visibly softens. 90 costs a few tens of kilobytes per image and keeps
      * small type legible.
      */
-    qualities: [75, 90],
+    qualities: [75, 90, 95],
     /**
      * Remote images are only ever served from a configured storage origin.
      * Vercel Blob mints a per-store subdomain that is not known until the store

@@ -75,3 +75,17 @@ export function displayUrl(url: string): string {
     return url;
   }
 }
+
+/**
+ * The widest a screenshot should be drawn so it still looks sharp.
+ *
+ * Browser screenshots carry no more detail than their pixel width, and most
+ * laptops render at 1.25x-1.5x device pixels, so a 1600px capture stretched
+ * across a 1150px column is already being upscaled. Allowing 1.5 device pixels
+ * per CSS pixel keeps text crisp; the result is clamped so a cover is never
+ * tiny and never wider than the content column.
+ */
+export function sharpWidth(intrinsic: number | null | undefined): number {
+  if (!intrinsic || intrinsic <= 0) return 1152;
+  return Math.max(560, Math.min(1152, Math.round(intrinsic / 1.5)));
+}
