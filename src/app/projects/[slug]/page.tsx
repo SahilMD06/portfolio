@@ -6,7 +6,6 @@ import { notFound } from 'next/navigation';
 
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
-import { ProjectVisual } from '@/components/site/project-card';
 import { Container, TechChip } from '@/components/ui';
 import {
   ArrowLeftIcon,
@@ -184,8 +183,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
           </header>
 
           <Container className="py-[clamp(3rem,2rem+4vw,6rem)]">
-            <div className="enter group" style={delay(360)}>
-              {cover ? (
+            {/* No placeholder when a project has no imagery: the write-up simply leads. */}
+            {cover ? (
+              <div className="enter group" style={delay(360)}>
                 <div className="relative aspect-[16/9] overflow-hidden rounded-card border border-border bg-surface-2">
                   <Image
                     src={cover}
@@ -196,17 +196,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                     priority
                   />
                 </div>
-              ) : (
-                <ProjectVisual
-                  project={{ ...project, category: '' }}
-                  number={position + 1}
-                  sizes="100vw"
-                  className="aspect-[16/9] rounded-card border border-border sm:aspect-[21/9]"
-                />
-              )}
-            </div>
+              </div>
+            ) : null}
 
-            <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16">
+            <div className={`${cover ? 'mt-14 ' : ''}grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-16`}>
               <div data-reveal="">
                 <p className="t-label mb-5">Overview</p>
                 {paragraphs.length > 0 ? (
