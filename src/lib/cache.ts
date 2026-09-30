@@ -30,7 +30,7 @@ const DEFAULT_REVALIDATE = 3600;
  * this a new deploy can be served rows cached by the old code — e.g. records
  * missing a newly added column.
  */
-const CACHE_SCHEMA_VERSION = 'v4';
+const CACHE_SCHEMA_VERSION = 'v5';
 
 /**
  * Wraps a data-layer read in Next's data cache, keyed and tagged so it can be
