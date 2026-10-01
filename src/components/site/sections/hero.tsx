@@ -20,11 +20,12 @@ import { formatPartialDate } from '@/lib/utils';
 const delay = (ms: number) => ({ '--enter-delay': `${ms}ms` }) as CSSProperties;
 
 /**
- * First viewport. Rendered eagerly (not behind Suspense) so it paints at once;
- * the status panel and stats strip stream in beside it.
+ * First viewport, composed as an editorial spread rather than a two-column
+ * hero: the name is the anchor, technical annotations sit in the margin, and
+ * the status panel hangs lower than the text column.
  *
- * Entrance is pure CSS, staggered: backdrop → status → name → headline →
- * intro → actions → panel → stats.
+ * Entrance is pure CSS, staggered: backdrop → annotations → name lines →
+ * headline → intro → actions → panel → figures.
  */
 export async function Hero() {
   const [profile, links, resume] = await Promise.all([
@@ -35,77 +36,71 @@ export async function Hero() {
 
   const resumeHref = mediaUrl(resume);
   const headlineParts = splitDotList(profile.headline);
+  const [discipline, ...specialisms] = headlineParts;
+  const nameLines = profile.fullName.split(/\s+/).filter(Boolean);
+  /* Margin annotations are the headline's own terms, not invented labels. */
+  const annotations = headlineParts.flatMap((part) => part.split(/,| & /)).map((p) => p.trim()).filter(Boolean);
 
   return (
     <section
-      className="relative isolate overflow-hidden border-b border-border"
+      className="relative isolate overflow-hidden"
       data-spotlight-group=""
       data-spotlight=""
     >
-      {/* Backdrop: a grid that lights up around the cursor, and one soft light. */}
       <div aria-hidden="true" className="enter-fade absolute inset-0 -z-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(60% 55% at 50% -10%, var(--color-accent-subtle), transparent 70%)',
-          }}
-        />
-        <div className="aurora" aria-hidden="true">
-          <span />
-          <span />
+        <div className="ambient">
+          <i />
+          <i />
         </div>
-        <div className="grid-backdrop parallax-slow" />
+        <div className="grid-backdrop parallax-slow opacity-70" />
         <div className="grid-backdrop grid-backdrop-lit" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-bg" />
+        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-b from-transparent to-bg" />
       </div>
 
-      <Container className="pt-[clamp(4rem,2.5rem+6vw,8rem)] pb-[clamp(3rem,2rem+4vw,5rem)]">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16">
-          <div>
+      <Container className="pt-[clamp(4.5rem,3rem+7vw,9rem)] pb-[clamp(3rem,2rem+4vw,5.5rem)]">
+        <div className="grid grid-cols-1 gap-y-14 lg:grid-cols-12 lg:gap-x-10">
+          {/* Margin: availability and the technical terms from the headline. */}
+          <div className="lg:col-span-12">
             {profile.availability ? (
-              <p
-                className="enter mb-7 inline-flex max-w-full items-center gap-2.5 rounded-full border border-border bg-surface/70 py-1.5 pr-3.5 pl-3 text-[0.8rem] text-fg-muted backdrop-blur"
-                style={delay(120)}
-              >
+              <p className="enter flex items-center gap-3 text-[0.82rem] text-fg-muted" style={delay(80)}>
                 <span className="status-dot shrink-0" aria-hidden="true" />
                 <span className="min-w-0">{profile.availability}</span>
               </p>
             ) : null}
+          </div>
 
-            <h1 className="t-display enter-words" style={delay(220)}>
-              {profile.fullName.split(/\s+/).map((word, index) => (
-                <span key={`${word}-${index}`} style={{ '--w': index } as CSSProperties}>
-                  {word}
-                  {index < profile.fullName.split(/\s+/).length - 1 ? ' ' : null}
+          <div className="lg:col-span-6 lg:col-start-1">
+            <h1 className="t-display reveal-lines -ml-[0.06em]" style={delay(180)}>
+              {nameLines.map((word, index) => (
+                <span key={`${word}-${index}`}>
+                  <span style={{ '--line': index } as CSSProperties}>{word}</span>
                 </span>
               ))}
             </h1>
 
-            {headlineParts.length > 0 ? (
+            {discipline ? (
               <p
-                className="enter mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[clamp(1.1rem,0.95rem+0.8vw,1.5rem)] font-medium tracking-tight"
-                style={delay(320)}
+                className="enter mt-7 max-w-xl text-[clamp(1.15rem,1rem+0.9vw,1.6rem)] leading-snug font-light tracking-tight text-fg"
+                style={delay(560)}
               >
-                {headlineParts.map((part, index) => (
-                  <span key={part} className="inline-flex items-center gap-3">
-                    {index > 0 ? (
-                      <span aria-hidden="true" className="h-1 w-1 rounded-full bg-accent" />
-                    ) : null}
-                    <span className={index === 0 ? 'text-fg' : 'text-fg-muted'}>{part}</span>
-                  </span>
-                ))}
+                {discipline}
+                {specialisms.length > 0 ? (
+                  <>
+                    <span className="text-fg-subtle"> — </span>
+                    <span className="t-em text-fg-muted">{specialisms.join(', ')}</span>
+                  </>
+                ) : null}
               </p>
             ) : null}
 
             {profile.shortBio ? (
-              <p className="t-lead enter mt-6 max-w-xl" style={delay(420)}>
+              <p className="t-lead enter mt-6 max-w-lg" style={delay(660)}>
                 {profile.shortBio}
               </p>
             ) : null}
 
-            <div className="enter mt-9 flex flex-wrap items-center gap-3" style={delay(520)}>
-              <a href="#projects" className="btn btn-primary">
+            <div className="enter mt-10 flex flex-wrap items-center gap-3" style={delay(760)}>
+              <a href="#projects" className="btn btn-primary magnetic" data-magnetic="">
                 View my work
                 <ArrowRightIcon width="15" height="15" className="arrow-nudge" />
               </a>
@@ -114,7 +109,8 @@ export async function Hero() {
                   href={resumeHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn-secondary"
+                  className="btn btn-secondary magnetic"
+                  data-magnetic=""
                 >
                   <DownloadIcon width="15" height="15" />
                   Resume
@@ -126,20 +122,17 @@ export async function Hero() {
             </div>
 
             {links.length > 0 ? (
-              <ul
-                className="enter mt-9 flex flex-wrap items-center gap-x-6 gap-y-3"
-                style={delay(620)}
-              >
+              <ul className="enter mt-9 flex flex-wrap items-center gap-x-7 gap-y-3" style={delay(840)}>
                 {links.map((link) => (
                   <li key={link.id}>
                     <OutboundLink
                       href={link.url}
-                      className="group inline-flex items-center gap-2 text-sm text-fg-muted transition-colors hover:text-fg"
+                      className="group inline-flex items-center gap-2 text-[0.85rem] text-fg-muted transition-colors hover:text-fg"
                     >
                       <SocialIcon
                         platform={link.platform}
-                        width="15"
-                        height="15"
+                        width="14"
+                        height="14"
                         className="transition-transform duration-200 group-hover:-translate-y-px"
                       />
                       <span className="link-underline">{link.label}</span>
@@ -150,22 +143,33 @@ export async function Hero() {
             ) : null}
           </div>
 
-          <div className="enter" style={delay(560)}>
+          {/* The panel sits lower than the text column, which breaks the grid. */}
+          <div className="enter lg:col-span-5 lg:col-start-8 lg:pt-20" style={delay(700)}>
             <Suspense fallback={<div className="surface h-72" aria-hidden="true" />}>
               <StatusPanel />
             </Suspense>
+
+            {annotations.length > 0 ? (
+              <ul className="mt-8 hidden flex-col gap-2.5 lg:flex">
+                {annotations.slice(0, 5).map((term) => (
+                  <li key={term} className="t-annotation">
+                    {term}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         </div>
 
-        <div className="enter mt-16 sm:mt-20" style={delay(700)}>
+        <div className="enter mt-[clamp(3.5rem,2rem+5vw,6rem)]" style={delay(900)}>
           <Suspense fallback={<div className="h-20" aria-hidden="true" />}>
             <HeroStats />
           </Suspense>
         </div>
       </Container>
 
-      <div className="enter-fade mt-14 border-t border-border py-5" style={delay(900)}>
-        <Suspense fallback={<div className="h-7" aria-hidden="true" />}>
+      <div className="enter-fade mt-12 border-t border-border py-4" style={delay(1100)}>
+        <Suspense fallback={<div className="h-6" aria-hidden="true" />}>
           <TechMarquee />
         </Suspense>
       </div>
@@ -175,7 +179,7 @@ export async function Hero() {
 
 /**
  * A compact "now" readout — current role, research, focus, location — drawn
- * from the database. It doubles as the hero's technical visual element.
+ * from the database. It doubles as the hero's technical instrument.
  */
 async function StatusPanel() {
   const [profile, experiences] = await Promise.all([getProfile(), getExperiences()]);
@@ -201,27 +205,28 @@ async function StatusPanel() {
   if (rows.length === 0) return null;
 
   return (
-    <div className="surface spotlight overflow-hidden" data-spotlight="">
-      <div className="flex items-center justify-between border-b border-border px-5 py-3">
-        <span className="flex items-center gap-1.5" aria-hidden="true">
-          <span className="h-2 w-2 rounded-full bg-surface-3" />
-          <span className="h-2 w-2 rounded-full bg-surface-3" />
-          <span className="h-2 w-2 rounded-full bg-surface-3" />
-        </span>
-        <span className="t-label flex items-center gap-2">
+    <div
+      data-spotlight=""
+      className="surface spotlight edge-gradient group relative overflow-hidden rounded-none rounded-tr-xl rounded-bl-xl transition-transform duration-500 hover:-translate-y-1"
+    >
+      <div className="flex items-center justify-between px-5 py-3.5">
+        <span className="t-label">Status</span>
+        <span className="flex items-center gap-2 text-[0.68rem] tracking-[0.14em] text-fg-subtle uppercase">
           <span className="status-dot" aria-hidden="true" />
-          Status
+          Live
         </span>
       </div>
-      <dl className="divide-y divide-border">
-        {rows.map((row) => (
+      <div className="hairline" />
+      <dl>
+        {rows.map((row, index) => (
           <div
             key={row.label}
-            className="grid grid-cols-[5rem_minmax(0,1fr)] gap-4 px-5 py-4 sm:grid-cols-[5.5rem_minmax(0,1fr)]"
+            className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-5 px-6 py-4 transition-colors duration-300 group-hover:bg-surface-2/40"
+            style={{ transitionDelay: `${index * 40}ms` }}
           >
             <dt className="t-label pt-0.5">{row.label}</dt>
             <dd className="min-w-0">
-              <p className="text-[0.925rem] leading-snug text-fg">{row.value}</p>
+              <p className="text-[0.92rem] leading-snug font-light text-fg">{row.value}</p>
               {row.meta ? <p className="mt-1 text-xs text-fg-subtle">{row.meta}</p> : null}
             </dd>
           </div>
@@ -231,7 +236,7 @@ async function StatusPanel() {
   );
 }
 
-/** Headline numbers, counted from real records rather than typed in. */
+/** Headline figures, counted from real records rather than typed in. */
 async function HeroStats() {
   const [projects, experiences, certifications, education] = await Promise.all([
     getPublishedProjects(),
@@ -257,18 +262,18 @@ async function HeroStats() {
   if (stats.length === 0) return null;
 
   return (
-    <dl className="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-border pt-8 sm:grid-cols-4">
+    <dl className="grid grid-cols-2 gap-x-6 gap-y-9 sm:grid-cols-4">
       {stats.map((stat) => (
-        <div key={stat.label} className="flex flex-col gap-2.5">
-          <dt className="t-label order-2">{stat.label}</dt>
-          <dd className="order-1 text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] leading-none font-semibold tracking-tight tabular-nums">
+        <div key={stat.label} className="flex flex-col gap-3 border-t border-border pt-5">
+          <dd className="text-[clamp(1.9rem,1.4rem+1.5vw,2.75rem)] leading-none font-light tracking-[-0.03em] tabular-nums">
             <span data-count={stat.value}>{stat.value}</span>
             {stat.suffix ? (
-              <span className="ml-1.5 text-[0.45em] font-normal tracking-normal text-fg-subtle">
+              <span className="ml-1.5 text-[0.4em] font-normal tracking-normal text-fg-subtle">
                 {stat.suffix}
               </span>
             ) : null}
           </dd>
+          <dt className="t-label">{stat.label}</dt>
         </div>
       ))}
     </dl>
@@ -288,8 +293,11 @@ async function TechMarquee() {
   const row = (hidden: boolean) => (
     <ul className="marquee-track" aria-hidden={hidden || undefined}>
       {names.map((name) => (
-        <li key={name} className="flex items-center gap-2.5 text-sm whitespace-nowrap text-fg-subtle">
-          <span className="h-1 w-1 rounded-full bg-accent/70" aria-hidden="true" />
+        <li
+          key={name}
+          className="flex items-center gap-2.5 font-mono text-[0.68rem] tracking-[0.12em] whitespace-nowrap text-fg-subtle uppercase"
+        >
+          <span className="h-[3px] w-[3px] rounded-full bg-accent/70" aria-hidden="true" />
           {name}
         </li>
       ))}

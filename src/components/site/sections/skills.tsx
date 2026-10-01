@@ -6,9 +6,11 @@ import { getSkillGroups } from '@/lib/services/content';
 import { pad2 } from '@/lib/portfolio';
 
 /**
- * Skills as grouped clusters rather than one flat wall of badges. Each group is
- * a card with its own glyph and count; individual technologies highlight on
- * hover. Groups and order come from the database.
+ * Skills as a typographic index rather than a wall of logos: one row per
+ * group, the category set large and light on the left with its technologies
+ * running as text beside it. Hovering or focusing a row brings it forward.
+ *
+ * Everything stays visible at rest, so nothing is hidden behind a hover.
  */
 export async function Skills({ index }: { index: string }) {
   const groups = await getSkillGroups();
@@ -19,44 +21,57 @@ export async function Skills({ index }: { index: string }) {
       <SectionHeading
         index={index}
         eyebrow="Skills"
-        title="Tools of the trade."
+        title={
+          <>
+            Tools of the <span className="t-em">trade</span>.
+          </>
+        }
         description="Grouped by where they sit in the stack."
       />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <ul className="border-t border-border">
         {groups.map((group, i) => (
-          <div
+          <li
             key={group.id}
-            data-spotlight=""
             data-reveal=""
             style={{ '--i': i } as CSSProperties}
-            className="surface spotlight group flex flex-col p-6"
+            className="group border-b border-border"
           >
-            <div className="mb-5 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span className="grid h-9 w-9 place-items-center rounded-xl border border-border bg-surface-2 text-fg-muted transition-[color,transform,border-color] duration-300 group-hover:-translate-y-0.5 group-hover:border-accent-line group-hover:text-accent">
-                  <CategoryIcon name={group.name} width="16" height="16" />
+            <div className="grid grid-cols-1 items-baseline gap-x-12 gap-y-5 py-8 transition-[padding,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:bg-surface/40 sm:py-10 lg:grid-cols-12 lg:group-hover:pl-4">
+              <div className="flex items-center gap-4 lg:col-span-4">
+                <span className="font-mono text-[0.7rem] text-accent tabular-nums">
+                  {pad2(i + 1)}
                 </span>
-                <h3 className="text-[0.975rem] tracking-tight">{group.name}</h3>
+                <h3 className="flex items-center gap-3 text-[clamp(1.3rem,1.1rem+0.8vw,1.85rem)] leading-none font-light tracking-[-0.03em] text-fg">
+                  {group.name}
+                </h3>
+                <CategoryIcon
+                  name={group.name}
+                  width="15"
+                  height="15"
+                  className="text-fg-subtle transition-colors duration-500 group-hover:text-accent"
+                  aria-hidden="true"
+                />
               </div>
-              <span className="font-mono text-xs text-fg-subtle tabular-nums">
+
+              <ul className="flex flex-wrap gap-x-6 gap-y-2.5 lg:col-span-7">
+                {group.skills.map((skill) => (
+                  <li
+                    key={skill.id}
+                    className="text-[0.88rem] font-light text-fg-subtle transition-colors duration-500 group-hover:text-fg-muted"
+                  >
+                    {skill.name}
+                  </li>
+                ))}
+              </ul>
+
+              <span className="hidden font-mono text-[0.7rem] text-fg-subtle tabular-nums lg:col-span-1 lg:block lg:text-right">
                 {pad2(group.skills.length)}
               </span>
             </div>
-
-            <ul className="flex flex-wrap gap-1.5">
-              {group.skills.map((skill) => (
-                <li
-                  key={skill.id}
-                  className="chip hover:border-accent-line hover:bg-accent-subtle hover:text-fg"
-                >
-                  {skill.name}
-                </li>
-              ))}
-            </ul>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
     </Section>
   );
 }

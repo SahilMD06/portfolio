@@ -4,7 +4,13 @@ import { Geist, Geist_Mono, Instrument_Serif, Space_Grotesk } from 'next/font/go
 
 import './globals.css';
 import { SiteAnalytics } from '@/components/site/analytics';
-import { BackToTop, CountUpNumbers, RevealObserver, SpotlightController } from '@/components/site/motion';
+import {
+  BackToTop,
+  CountUpNumbers,
+  MagneticController,
+  RevealObserver,
+  SpotlightController,
+} from '@/components/site/motion';
 import { APPEARANCE_INIT_SCRIPT } from '@/components/site/appearance-store';
 import { env } from '@/lib/env';
 import { getProfile, getSiteSettings } from '@/lib/services/content';
@@ -130,6 +136,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <RevealObserver />
         <SpotlightController />
         <CountUpNumbers />
+        <MagneticController />
         <BackToTop />
         <Suspense fallback={null}>
           <SiteAnalytics />

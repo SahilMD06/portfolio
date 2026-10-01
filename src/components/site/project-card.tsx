@@ -89,8 +89,16 @@ export function ProjectVisual({
           </>
         )}
       </div>
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-t from-bg/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      />
+      <span
+        aria-hidden="true"
+        className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-gradient-to-r from-accent via-accent/40 to-transparent transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
+      />
       {project.category ? (
-        <span className="absolute top-4 left-4 rounded-full border border-border bg-bg/70 px-2.5 py-1 font-mono text-[0.68rem] tracking-wide text-fg-muted backdrop-blur">
+        <span className="absolute top-4 left-4 rounded-[0.3rem] border border-border bg-bg/70 px-2.5 py-1 font-mono text-[0.64rem] tracking-[0.1em] text-fg-muted uppercase backdrop-blur">
           {project.category}
         </span>
       ) : null}
@@ -166,7 +174,7 @@ export function FeaturedProjectCard({
           {dates ? <span>{dates}</span> : null}
         </p>
 
-        <h3 className="mt-4 text-[clamp(1.6rem,1.3rem+1vw,2.1rem)] leading-tight tracking-tight">
+        <h3 className="mt-5 text-[clamp(1.7rem,1.3rem+1.2vw,2.35rem)] leading-[1.1] font-light tracking-[-0.03em]">
           <Link
             href={`/projects/${project.slug}`}
             className="outline-none after:absolute after:inset-0 after:z-0 after:rounded-[inherit] focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-accent"
@@ -191,7 +199,7 @@ export function FeaturedProjectCard({
 
         <div className="mt-auto flex flex-wrap items-center justify-between gap-4 pt-8">
           <ExternalLinks project={project} />
-          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-accent">
+          <span className="inline-flex items-center gap-1.5 text-sm text-accent">
             Case study
             <ArrowRightIcon width="15" height="15" className="arrow-nudge" />
           </span>
@@ -233,7 +241,7 @@ export function ProjectCard({
       <div className="flex flex-1 flex-col p-6">
         {dates ? <p className="t-label">{dates}</p> : null}
 
-        <h3 className="mt-2 text-lg leading-snug tracking-tight">
+        <h3 className="mt-2.5 text-[1.05rem] leading-snug font-light tracking-[-0.02em]">
           <Link
             href={`/projects/${project.slug}`}
             className="outline-none after:absolute after:inset-0 after:z-0 after:rounded-[inherit] focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-accent"
@@ -264,6 +272,77 @@ export function ProjectCard({
         ) : null}
 
         <div className="mt-auto flex items-center justify-between gap-4 pt-6">
+          <ExternalLinks project={project} />
+          <ArrowRightIcon
+            width="16"
+            height="16"
+            aria-hidden="true"
+            className="arrow-nudge ml-auto text-fg-subtle transition-colors group-hover:text-accent"
+          />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/** Horizontal showcase: a wide visual beside the write-up, to break the grid. */
+export function WideProjectCard({
+  project,
+  number,
+  revealIndex,
+}: {
+  project: PublicProject;
+  number: number;
+  revealIndex?: number;
+}) {
+  const dates = formatDateRange(project.startDate, project.endDate);
+
+  return (
+    <article
+      data-spotlight=""
+      data-reveal="left"
+      style={revealIndex !== undefined ? ({ '--i': revealIndex } as CSSProperties) : undefined}
+      className="surface surface-interactive spotlight group grid grid-cols-1 overflow-hidden sm:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]"
+    >
+      <ProjectVisual
+        project={project}
+        number={number}
+        sizes="(min-width: 1024px) 28rem, 100vw"
+        className="aspect-[16/10] border-b border-border sm:aspect-auto sm:min-h-[15rem] sm:border-r sm:border-b-0"
+      />
+
+      <div className="flex flex-col p-6 sm:p-8">
+        <p className="t-label flex items-center gap-3">
+          {project.category ? <span>{project.category}</span> : null}
+          {dates ? <span className="text-fg-subtle">{dates}</span> : null}
+        </p>
+
+        <h3 className="mt-4 text-[clamp(1.25rem,1.1rem+0.6vw,1.6rem)] leading-tight font-light tracking-[-0.025em]">
+          <Link
+            href={`/projects/${project.slug}`}
+            className="outline-none after:absolute after:inset-0 after:z-0 after:rounded-[inherit] focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-accent"
+          >
+            {project.title}
+          </Link>
+        </h3>
+
+        {project.summary ? (
+          <p className="mt-3 line-clamp-3 text-[0.95rem] leading-relaxed text-fg-muted">
+            {project.summary}
+          </p>
+        ) : null}
+
+        {project.technologies.length > 0 ? (
+          <ul className="mt-5 flex flex-wrap gap-1.5">
+            {project.technologies.slice(0, 5).map((tech) => (
+              <li key={tech}>
+                <TechChip>{tech}</TechChip>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        <div className="mt-auto flex items-center justify-between gap-4 pt-7">
           <ExternalLinks project={project} />
           <ArrowRightIcon
             width="16"

@@ -86,19 +86,19 @@ export function SiteHeaderClient({ name, items }: { name: string; items: NavItem
     .join('');
 
   return (
-    <header className="site-header-bar sticky top-0 z-50 border-b backdrop-blur-xl">
+    <header className="site-header-bar sticky top-0 z-50 border-b backdrop-blur-2xl">
       <nav
         aria-label="Main"
-        className="mx-auto flex h-16 max-w-content items-center gap-4 px-5 sm:px-8"
+        className="mx-auto flex h-[4.25rem] max-w-content items-center gap-5 px-5 sm:px-8"
       >
-        <Link href="/" className="group mr-auto flex items-center gap-2.5 rounded-lg">
+        <Link href="/" className="group mr-auto flex items-center gap-3 rounded-lg">
           <span
             aria-hidden="true"
-            className="grid h-8 w-8 place-items-center rounded-lg border border-border-strong bg-surface-2 font-mono text-[0.7rem] font-medium tracking-tight text-fg transition-colors duration-200 group-hover:border-accent-line group-hover:text-accent"
+            className="grid h-7 w-7 place-items-center rounded-[0.3rem] border border-border-strong bg-surface-2 font-mono text-[0.62rem] tracking-[0.06em] text-fg transition-colors duration-300 group-hover:border-accent-line group-hover:text-accent"
           >
             {initials}
           </span>
-          <span className="text-[0.95rem] font-medium tracking-tight">{name}</span>
+          <span className="text-[0.9rem] font-light tracking-[-0.01em]">{name}</span>
         </Link>
 
         <ul className="hidden items-center lg:flex">
@@ -110,7 +110,7 @@ export function SiteHeaderClient({ name, items }: { name: string; items: NavItem
                   href={href(item.id)}
                   aria-current={active ? 'location' : undefined}
                   className={cn(
-                    'relative block px-3 py-2 text-[0.85rem] transition-colors duration-200',
+                    'group relative block px-4 py-2 text-[0.8rem] font-light tracking-[0.01em] transition-colors duration-300',
                     active ? 'text-fg' : 'text-fg-muted hover:text-fg',
                   )}
                 >
@@ -118,8 +118,8 @@ export function SiteHeaderClient({ name, items }: { name: string; items: NavItem
                   <span
                     aria-hidden="true"
                     className={cn(
-                      'absolute inset-x-3 -bottom-px h-px origin-center bg-accent transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
-                      active ? 'scale-x-100' : 'scale-x-0',
+                      'absolute inset-x-4 -bottom-px h-px origin-left bg-gradient-to-r from-accent to-transparent transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                      active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
                     )}
                   />
                 </Link>
@@ -130,9 +130,13 @@ export function SiteHeaderClient({ name, items }: { name: string; items: NavItem
 
         <AppearancePanel className="hidden sm:block" />
 
-        <Link href={href('contact')} className="btn btn-primary btn-sm hidden lg:inline-flex">
+        <Link
+          href={href('contact')}
+          data-magnetic=""
+          className="magnetic btn btn-sm hidden border-accent-line bg-accent-subtle text-fg hover:border-accent hover:bg-accent-subtle lg:inline-flex"
+        >
           Let&apos;s talk
-          <ArrowRightIcon width="14" height="14" className="arrow-nudge" />
+          <ArrowRightIcon width="14" height="14" className="arrow-nudge text-accent" />
         </Link>
 
         <button

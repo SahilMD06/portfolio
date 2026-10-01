@@ -63,7 +63,7 @@ export async function Contact({ index }: { index: string }) {
                 <span>Contact</span>
               </p>
               <h2 className="t-title max-w-lg">
-                Have a project, opportunity, or an interesting problem?
+                Have a project, opportunity, or an <span className="t-em">interesting problem</span>?
               </h2>
               <p className="t-lead mt-5 max-w-md">The quickest way to reach me is email.</p>
 

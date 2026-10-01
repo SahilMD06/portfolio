@@ -237,3 +237,65 @@ export function BackToTop() {
     </button>
   );
 }
+
+/**
+ * Nudges [data-magnetic] controls a few pixels toward the pointer when it comes
+ * close, then releases them. One rAF-throttled listener for the page; skipped
+ * on touch devices and when motion is off, where it would mean nothing.
+ */
+export function MagneticController() {
+  useMotionPreference((allowed) => {
+    if (!allowed) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    const RADIUS = 110;
+    const PULL = 0.22;
+    let frame = 0;
+    let last: PointerEvent | null = null;
+    let engaged: HTMLElement[] = [];
+
+    const release = (el: HTMLElement) => {
+      el.style.removeProperty('--mx');
+      el.style.removeProperty('--my');
+    };
+
+    const update = () => {
+      frame = 0;
+      const event = last;
+      if (!event) return;
+      const targets = [...document.querySelectorAll<HTMLElement>('[data-magnetic]')];
+      const rects = targets.map((el) => el.getBoundingClientRect());
+
+      const next: HTMLElement[] = [];
+      targets.forEach((el, i) => {
+        const rect = rects[i]!;
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = event.clientX - cx;
+        const dy = event.clientY - cy;
+        if (Math.abs(dx) > rect.width / 2 + RADIUS || Math.abs(dy) > rect.height / 2 + RADIUS) return;
+        el.style.setProperty('--mx', `${(dx * PULL).toFixed(1)}px`);
+        el.style.setProperty('--my', `${(dy * PULL * 0.6).toFixed(1)}px`);
+        next.push(el);
+      });
+
+      engaged.filter((el) => !next.includes(el)).forEach(release);
+      engaged = next;
+    };
+
+    const onMove = (event: PointerEvent) => {
+      last = event;
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    document.addEventListener('pointermove', onMove, { passive: true });
+    return () => {
+      document.removeEventListener('pointermove', onMove);
+      cancelAnimationFrame(frame);
+      engaged.forEach(release);
+      engaged = [];
+    };
+  });
+
+  return null;
+}

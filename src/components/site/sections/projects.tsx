@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import { EmptyState, Section, SectionHeading } from '@/components/ui';
 import { ArrowRightIcon } from '@/components/ui/icons';
-import { FeaturedProjectCard, ProjectCard } from '@/components/site/project-card';
+import { FeaturedProjectCard, ProjectCard, WideProjectCard } from '@/components/site/project-card';
 import { getFeaturedProjects, getPublishedProjects } from '@/lib/services/content';
 
 /**
@@ -22,7 +22,11 @@ export async function Projects({ index }: { index: string }) {
       <SectionHeading
         index={index}
         eyebrow="Projects"
-        title="Selected work."
+        title={
+          <>
+            Selected <span className="t-em">work</span>.
+          </>
+        }
         description="A few things I've built."
         action={
           all.length > shown.length ? (
@@ -41,21 +45,32 @@ export async function Projects({ index }: { index: string }) {
           description="Projects added in the admin dashboard will appear here."
         />
       ) : (
-        <div className="space-y-5">
+        <div className="space-y-5 sm:space-y-6">
           <FeaturedProjectCard project={lead} number={numberOf(lead.id)} priority />
 
+          {/* Two unequal columns, the second hanging lower than the first. */}
           {rest.length > 0 ? (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {rest.map((project, i) => (
-                <ProjectCard
+            <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-12">
+              {rest.slice(0, 2).map((project, i) => (
+                <div
                   key={project.id}
-                  project={project}
-                  number={numberOf(project.id)}
-                  revealIndex={i}
-                />
+                  className={i === 0 ? 'lg:col-span-7' : 'lg:col-span-5 lg:mt-12'}
+                >
+                  <ProjectCard project={project} number={numberOf(project.id)} revealIndex={i} />
+                </div>
               ))}
             </div>
           ) : null}
+
+          {/* Anything further runs full width, horizontally. */}
+          {rest.slice(2).map((project, i) => (
+            <WideProjectCard
+              key={project.id}
+              project={project}
+              number={numberOf(project.id)}
+              revealIndex={i}
+            />
+          ))}
 
           {remaining > 0 ? (
             <p className="pt-3 text-center text-sm text-fg-subtle" data-reveal="">

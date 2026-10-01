@@ -86,7 +86,7 @@ export function Section({
   return (
     <section
       id={id}
-      className={cn('relative scroll-mt-20 py-[clamp(4.5rem,3rem+6vw,8rem)]', className)}
+      className={cn('relative scroll-mt-20 py-[clamp(5.5rem,3.5rem+8vw,11rem)]', className)}
       {...(spotlight ? { 'data-spotlight-group': '' } : {})}
     >
       <Container>{children}</Container>
@@ -108,32 +108,30 @@ export function SectionHeading({
 }: {
   index?: string;
   eyebrow?: string;
-  title: string;
+  title: ReactNode;
   description?: string;
   action?: ReactNode;
   className?: string;
 }) {
   return (
-    <div
-      data-reveal
-      className={cn(
-        'mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-5 sm:mb-14',
-        className,
-      )}
-    >
-      <div className="max-w-2xl">
-        {eyebrow ? (
-          <p className="t-label mb-4 flex items-center gap-3">
-            {index ? <span className="text-accent">{index}</span> : null}
-            {index ? <span className="h-px w-8 bg-border-strong" aria-hidden="true" /> : null}
-            <span>{eyebrow}</span>
-          </p>
-        ) : null}
-        <h2 className="t-title">{title}</h2>
-        <span className="heading-rule mt-5 w-28" aria-hidden="true" />
-        {description ? <p className="t-lead mt-4 max-w-xl">{description}</p> : null}
+    <div data-reveal className={cn('mb-14 sm:mb-20', className)}>
+      {eyebrow ? (
+        <div className="mb-8 flex items-center gap-4">
+          {index ? (
+            <span className="font-mono text-xs tracking-[0.1em] text-accent tabular-nums">{index}</span>
+          ) : null}
+          <span className="t-label">{eyebrow}</span>
+          <span className="heading-rule hidden flex-1 sm:block" aria-hidden="true" />
+        </div>
+      ) : null}
+
+      <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
+        <div className="max-w-3xl">
+          <h2 className="t-title">{title}</h2>
+          {description ? <p className="t-lead mt-5 max-w-xl">{description}</p> : null}
+        </div>
+        {action}
       </div>
-      {action}
     </div>
   );
 }

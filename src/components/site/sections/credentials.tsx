@@ -54,7 +54,11 @@ export async function Credentials({ index }: { index: string }) {
 
   return (
     <Section id="credentials" spotlight>
-      <SectionHeading index={index} eyebrow="Credentials" title="Education & certifications." />
+      <SectionHeading index={index} eyebrow="Credentials" title={
+          <>
+            Education &amp; <span className="t-em">certifications</span>.
+          </>
+        } />
 
       <div className="space-y-16">
         {primary ? (

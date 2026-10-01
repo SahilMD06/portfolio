@@ -23,7 +23,11 @@ export async function Experience({ index }: { index: string }) {
       <SectionHeading
         index={index}
         eyebrow="Experience"
-        title="Internships & roles."
+        title={
+          <>
+            Internships &amp; <span className="t-em">roles</span>.
+          </>
+        }
       />
 
       <ol className="timeline-root relative">
@@ -47,7 +51,7 @@ export async function Experience({ index }: { index: string }) {
               key={item.id}
               data-reveal=""
               style={{ '--i': Math.min(i, 3) } as CSSProperties}
-              className="relative grid grid-cols-1 gap-3 pb-12 pl-8 last:pb-0 md:grid-cols-[11rem_minmax(0,1fr)] md:gap-10 md:pl-0"
+              className="relative grid grid-cols-1 gap-3 pb-16 pl-8 last:pb-0 md:grid-cols-[11rem_minmax(0,1fr)] md:gap-12 md:pl-0"
             >
               {/* Node on the rail. */}
               <span

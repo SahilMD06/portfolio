@@ -23,6 +23,8 @@
  * surface, every light tone clears it on the dark one.
  */
 :root {
+  /* The second stop of the accent gradient: a cooler cyan beside the accent. */
+  --grad-cyan: #63d6e8;
   --accent-d: #5fd9b4;
   --accent-d-hover: #86e6c8;
   --accent-d-rgb: 95 217 180;
@@ -31,6 +33,7 @@
   --accent-l-rgb: 8 107 80;
 }
 :root[data-accent='iris'] {
+  --grad-cyan: #8fb4ff;
   --accent-d: #a794ff;
   --accent-d-hover: #c2b5ff;
   --accent-d-rgb: 167 148 255;
@@ -39,6 +42,7 @@
   --accent-l-rgb: 83 59 196;
 }
 :root[data-accent='azure'] {
+  --grad-cyan: #63e0e8;
   --accent-d: #5fb6f9;
   --accent-d-hover: #8ccbfb;
   --accent-d-rgb: 95 182 249;
@@ -47,6 +51,7 @@
   --accent-l-rgb: 11 96 184;
 }
 :root[data-accent='amber'] {
+  --grad-cyan: #f0a65f;
   --accent-d: #f3c169;
   --accent-d-hover: #f8d492;
   --accent-d-rgb: 243 193 105;
@@ -55,6 +60,7 @@
   --accent-l-rgb: 133 85 7;
 }
 :root[data-accent='rose'] {
+  --grad-cyan: #ff9ed8;
   --accent-d: #ff8fa6;
   --accent-d-hover: #ffb1c1;
   --accent-d-rgb: 255 143 166;
@@ -88,17 +94,18 @@
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  --text-display: clamp(2.6rem, 1.55rem + 4.2vw, 5rem);
-  --text-title: clamp(1.9rem, 1.35rem + 1.9vw, 2.9rem);
-  --text-lead: clamp(1.05rem, 0.98rem + 0.3vw, 1.2rem);
+  --text-display: clamp(2.9rem, 1.6rem + 5.2vw, 6.25rem);
+  --text-title: clamp(1.85rem, 1.3rem + 1.8vw, 2.75rem);
+  --text-lead: clamp(1.02rem, 0.96rem + 0.28vw, 1.15rem);
 
   /* --- Shape & layout ------------------------------------------------------- */
-  --radius-card: 1rem;
-  --radius-control: 0.75rem;
+  --radius-card: 0.65rem;
+  --radius-control: 0.5rem;
   --container-content: 72rem;
 
   /* --- Motion --------------------------------------------------------------- */
   --ease-out-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.26, 0.48, 1);
   --duration-micro: 180ms;
   --duration-component: 520ms;
 }
@@ -110,6 +117,7 @@
  * wrong theme.
  */
 :root[data-theme='light'] {
+  --grad-cyan: #0a6e86;
   --color-bg: #f6f7f9;
   --color-surface: #ffffff;
   --color-surface-2: #eef0f3;
@@ -132,6 +140,7 @@
 
 @media (prefers-color-scheme: light) {
   :root[data-theme='system'] {
+    --grad-cyan: #0a6e86;
     --color-bg: #f6f7f9;
     --color-surface: #ffffff;
     --color-surface-2: #eef0f3;
@@ -238,8 +247,8 @@
   h3,
   h4 {
     text-wrap: balance;
-    font-weight: 600;
-    letter-spacing: -0.025em;
+    font-weight: 400;
+    letter-spacing: -0.02em;
   }
 
   p {
@@ -271,17 +280,33 @@
   .t-display {
     font-family: var(--font-display);
     font-size: var(--text-display);
-    line-height: 1.02;
+    line-height: 0.95;
     letter-spacing: -0.045em;
-    font-weight: 600;
+    font-weight: 300;
   }
 
   .t-title {
     font-family: var(--font-display);
     font-size: var(--text-title);
-    line-height: 1.08;
-    letter-spacing: -0.035em;
-    font-weight: 600;
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    font-weight: 400;
+  }
+
+  /* Editorial emphasis: a serif italic phrase inside a sans heading. */
+  .t-em {
+    font-family: var(--font-instrument), 'Iowan Old Style', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+
+  /* A phrase picked out in the accent gradient rather than a flat colour. */
+  .t-gradient {
+    background: linear-gradient(100deg, var(--color-accent), var(--grad-cyan) 55%, var(--color-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   /* The serif has one weight and much tighter default fit. */
@@ -312,11 +337,29 @@
   /* Small technical label: section numbers, dates, metadata. */
   .t-label {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     line-height: 1.4;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-fg-subtle);
+  }
+
+  /* A technical annotation: hairline, then a small mono label. */
+  .t-annotation {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-fg-subtle);
+  }
+  .t-annotation::before {
+    content: '';
+    width: 1.5rem;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-accent-line), transparent);
   }
 
   /* --- Surfaces ------------------------------------------------------------ */
@@ -403,6 +446,7 @@
   .btn {
     position: relative;
     display: inline-flex;
+    letter-spacing: -0.005em;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
@@ -456,14 +500,14 @@
   }
 
   .btn-primary {
-    background: var(--color-accent);
+    background: linear-gradient(120deg, var(--color-accent), var(--grad-cyan));
     color: var(--color-accent-fg);
     box-shadow:
       0 0 0 1px rgb(255 255 255 / 0.08) inset,
       0 8px 24px -12px var(--color-accent-line);
   }
   .btn-primary:hover {
-    background: var(--color-accent-hover);
+    background: linear-gradient(120deg, var(--color-accent-hover), var(--grad-cyan));
     box-shadow:
       0 0 0 1px rgb(255 255 255 / 0.12) inset,
       0 12px 32px -10px var(--color-accent-line);
@@ -723,13 +767,129 @@
   .heading-rule {
     display: block;
     height: 1px;
-    background: linear-gradient(90deg, var(--color-accent-line), transparent);
+    background: linear-gradient(90deg, var(--color-accent-line), var(--color-border) 22%, transparent);
     transform: scaleX(0);
     transform-origin: 0 50%;
     transition: transform 900ms var(--ease-out-premium) 120ms;
   }
   [data-revealed] .heading-rule {
     transform: scaleX(1);
+  }
+
+
+  /* --- Gradient edge -------------------------------------------------------
+   *
+   * A one-pixel border fading from the accent into nothing, drawn with a masked
+   * pseudo-element so the radius stays crisp. For panels that should read as
+   * instruments rather than cards.
+   */
+  .edge-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(140deg, var(--color-accent-line), transparent 38%, transparent 62%, rgb(var(--accent-d-rgb) / 0.18));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.85;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+  }
+  .edge-gradient:hover::before {
+    opacity: 1;
+  }
+
+  /* A hairline carrying a little accent at its start. */
+  .hairline {
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-accent-line), var(--color-border) 18%, transparent);
+  }
+
+  /* --- Ambient light ------------------------------------------------------
+   *
+   * Two very large, very soft gradient fields that drift behind a section and
+   * give the page depth without reading as decoration.
+   */
+  .ambient {
+    position: absolute;
+    inset: -30% -10%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .ambient i {
+    position: absolute;
+    display: block;
+    border-radius: 999px;
+    filter: blur(110px);
+    will-change: transform;
+  }
+  .ambient i:nth-child(1) {
+    top: -10%;
+    left: -5%;
+    width: 48rem;
+    height: 38rem;
+    background: radial-gradient(circle, rgb(var(--accent-d-rgb) / 0.1), transparent 70%);
+    animation: ambient-a 32s ease-in-out infinite alternate;
+  }
+  .ambient i:nth-child(2) {
+    top: 20%;
+    right: -10%;
+    width: 42rem;
+    height: 42rem;
+    background: radial-gradient(circle, rgb(var(--accent-d-rgb) / 0.07), transparent 72%);
+    animation: ambient-b 44s ease-in-out infinite alternate;
+  }
+  @keyframes ambient-a {
+    to {
+      transform: translate3d(8%, 6%, 0) scale(1.15);
+    }
+  }
+  @keyframes ambient-b {
+    to {
+      transform: translate3d(-7%, -5%, 0) scale(1.1);
+    }
+  }
+
+  /* --- Magnetic buttons ---------------------------------------------------
+   *
+   * MagneticController writes a tiny offset into --mx / --my while the pointer
+   * is near. Movement is capped at a few pixels: felt, not seen.
+   */
+  .magnetic {
+    transform: translate3d(var(--mx, 0px), var(--my, 0px), 0);
+    transition: transform 420ms var(--ease-out-premium);
+  }
+  .magnetic:active {
+    transition-duration: 90ms;
+  }
+
+  /* --- Line reveal --------------------------------------------------------
+   *
+   * Each line of a display heading sits in its own clipping row and rises into
+   * place, which reads as typesetting rather than as a fade.
+   */
+  .reveal-lines > span {
+    display: block;
+    overflow: hidden;
+  }
+  .reveal-lines > span > span {
+    display: block;
+    animation: line-rise 1.05s var(--ease-out-premium) both;
+    animation-delay: calc(var(--enter-delay, 0ms) + var(--line, 0) * 120ms);
+  }
+  @keyframes line-rise {
+    from {
+      transform: translateY(105%) rotate(1.2deg);
+      opacity: 0;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
   }
 
   /* --- Status dot ---------------------------------------------------------- */
@@ -989,8 +1149,14 @@
 :root[data-motion='off'] .btn::after {
   display: none !important;
 }
-:root[data-motion='off'] .aurora {
+:root[data-motion='off'] .aurora,
+:root[data-motion='off'] .ambient {
   display: none !important;
+}
+:root[data-motion='off'] .reveal-lines > span > span {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 :root[data-motion='off'] .marquee-track,
 :root[data-motion='off'] .parallax-slow,
@@ -1021,8 +1187,14 @@
     filter: none;
   }
   :root:not([data-motion='on']) .status-dot::after,
-  :root:not([data-motion='on']) .aurora {
+  :root:not([data-motion='on']) .aurora,
+  :root:not([data-motion='on']) .ambient {
     display: none;
+  }
+  :root:not([data-motion='on']) .reveal-lines > span > span {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
   :root:not([data-motion='on']) .marquee-track,
   :root:not([data-motion='on']) .parallax-slow,
