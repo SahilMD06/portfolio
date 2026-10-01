@@ -197,6 +197,12 @@
 
   html {
     scroll-behavior: smooth;
+    /*
+     * Horizontal reveals sit a few pixels outside the viewport until they are
+     * revealed. `clip` removes the resulting scroll without creating a scroll
+     * container, so sticky positioning still works.
+     */
+    overflow-x: clip;
     /* Leaves room for the floating header when jumping to an anchor. */
     scroll-padding-top: 5.5rem;
     -webkit-text-size-adjust: 100%;
@@ -748,10 +754,10 @@
     transition-delay: calc(min(var(--i, 0), 8) * 70ms);
   }
   .js [data-reveal='left'] {
-    transform: translate3d(-26px, 0, 0);
+    transform: translate3d(-18px, 0, 0);
   }
   .js [data-reveal='right'] {
-    transform: translate3d(26px, 0, 0);
+    transform: translate3d(18px, 0, 0);
   }
   .js [data-reveal='scale'] {
     transform: scale(0.965);
