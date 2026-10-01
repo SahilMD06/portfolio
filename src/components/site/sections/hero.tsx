@@ -87,7 +87,7 @@ export async function Hero() {
                 {specialisms.length > 0 ? (
                   <>
                     <span className="text-fg-subtle"> — </span>
-                    <span className="t-em text-fg-muted">{specialisms.join(', ')}</span>
+                    <span className="font-light text-fg-muted">{specialisms.join(', ')}</span>
                   </>
                 ) : null}
               </p>

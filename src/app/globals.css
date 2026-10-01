@@ -299,12 +299,17 @@
     font-weight: 400;
   }
 
-  /* Editorial emphasis: a serif italic phrase inside a sans heading. */
+  /*
+   * Editorial emphasis, kept in the same typeface. Mixing a serif italic into
+   * a grotesk heading reads as two voices; a tonal shift does the same job
+   * quietly. One highlighted word per heading, no more.
+   */
   .t-em {
-    font-family: var(--font-instrument), 'Iowan Old Style', Georgia, serif;
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.015em;
+    font-weight: 300;
+    background: linear-gradient(100deg, var(--color-accent), var(--grad-cyan) 65%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   /* A phrase picked out in the accent gradient rather than a flat colour. */
