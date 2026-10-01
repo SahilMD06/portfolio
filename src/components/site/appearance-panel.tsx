@@ -49,9 +49,9 @@ const ACCENTS: { value: Accent; label: string; swatch: string }[] = [
 ];
 
 const FONTS: { value: DisplayFont; label: string; className: string }[] = [
-  { value: 'geist', label: 'Sans', className: 'font-sans' },
-  { value: 'serif', label: 'Serif', className: 'font-display-serif' },
   { value: 'grotesk', label: 'Grotesk', className: 'font-display-grotesk' },
+  { value: 'editorial', label: 'Editorial', className: 'font-display-editorial' },
+  { value: 'neutral', label: 'Neutral', className: 'font-sans' },
 ];
 
 const rowClass = 'flex items-center justify-between gap-4 px-3 py-2.5';

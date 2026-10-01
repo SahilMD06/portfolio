@@ -8,7 +8,7 @@
 export type Theme = 'light' | 'dark' | 'system';
 export type Accent = 'mint' | 'iris' | 'azure' | 'amber' | 'rose';
 export type Motion = 'on' | 'off';
-export type DisplayFont = 'geist' | 'serif' | 'grotesk';
+export type DisplayFont = 'grotesk' | 'editorial' | 'neutral';
 
 export type Preferences = {
   theme: Theme;
@@ -34,13 +34,13 @@ const ATTRIBUTE: Record<PreferenceKey, string> = {
 };
 
 /** The values used when nothing has been chosen (motion is decided by the OS). */
-const FALLBACK: Preferences = { theme: 'dark', accent: 'mint', motion: 'on', font: 'geist' };
+const FALLBACK: Preferences = { theme: 'dark', accent: 'mint', motion: 'on', font: 'grotesk' };
 
 const ALLOWED: { [K in PreferenceKey]: readonly Preferences[K][] } = {
   theme: ['dark', 'light', 'system'],
   accent: ['mint', 'iris', 'azure', 'amber', 'rose'],
   motion: ['on', 'off'],
-  font: ['geist', 'serif', 'grotesk'],
+  font: ['grotesk', 'editorial', 'neutral'],
 };
 
 /**
@@ -55,7 +55,7 @@ const ALLOWED: { [K in PreferenceKey]: readonly Preferences[K][] } = {
 export const APPEARANCE_INIT_SCRIPT = `(function(){var d=document.documentElement;d.classList.add('js');function g(k,a,f){try{var v=localStorage.getItem(k);return a.indexOf(v)<0?f:v}catch(e){return f}}
 d.setAttribute('data-theme',g('${STORAGE_KEY.theme}',['dark','light','system'],'dark'));
 d.setAttribute('data-accent',g('${STORAGE_KEY.accent}',['mint','iris','azure','amber','rose'],'mint'));
-d.setAttribute('data-font',g('${STORAGE_KEY.font}',['geist','serif','grotesk'],'geist'));
+d.setAttribute('data-font',g('${STORAGE_KEY.font}',['grotesk','editorial','neutral'],'grotesk'));
 var m='on';try{if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)m='off'}catch(e){}
 d.setAttribute('data-motion',g('${STORAGE_KEY.motion}',['on','off'],m));})();`;
 

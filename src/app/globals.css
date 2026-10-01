@@ -12,7 +12,7 @@
      data-theme  dark | light | system
      data-accent mint | iris | azure | amber | rose
      data-motion on | off
-     data-font   geist | serif | grotesk
+     data-font   grotesk | editorial | neutral
    ========================================================================== */
 
 /* --- Accent palettes ------------------------------------------------------
@@ -174,7 +174,7 @@
     --grid-line-lit: rgb(var(--accent-d-rgb) / 0.35);
     --noise-opacity: 0.035;
     /* Headings follow the chosen display font; body text never changes. */
-    --font-display: var(--font-sans);
+    --font-display: var(--font-space), var(--font-sans);
   }
   :root[data-theme='light'] {
     color-scheme: light;
@@ -269,11 +269,11 @@
    never costs more than one extra font file.
    ========================================================================== */
 
-:root[data-font='serif'] {
-  --font-display: var(--font-instrument), 'Iowan Old Style', Georgia, serif;
+:root[data-font='editorial'] {
+  --font-display: var(--font-bricolage), var(--font-sans);
 }
-:root[data-font='grotesk'] {
-  --font-display: var(--font-space), var(--font-sans);
+:root[data-font='neutral'] {
+  --font-display: var(--font-sans);
 }
 
 /* ==========================================================================
@@ -287,7 +287,7 @@
     font-family: var(--font-display);
     font-size: var(--text-display);
     line-height: 0.95;
-    letter-spacing: -0.045em;
+    letter-spacing: -0.035em;
     font-weight: 300;
   }
 
@@ -295,7 +295,7 @@
     font-family: var(--font-display);
     font-size: var(--text-title);
     line-height: 1.06;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.025em;
     font-weight: 400;
   }
 
@@ -320,23 +320,20 @@
     color: transparent;
   }
 
-  /* The serif has one weight and much tighter default fit. */
-  :root[data-font='serif'] :is(.t-display, .t-title) {
-    font-weight: 400;
-    letter-spacing: -0.015em;
-    line-height: 1.06;
+  /* Per-face tracking: each display font sits differently at large sizes. */
+  :root[data-font='editorial'] :is(.t-display, .t-title) {
+    letter-spacing: -0.04em;
   }
-  :root[data-font='grotesk'] :is(.t-display, .t-title) {
-    letter-spacing: -0.035em;
-    font-weight: 500;
+  :root[data-font='neutral'] :is(.t-display, .t-title) {
+    letter-spacing: -0.045em;
   }
 
   /* Font-name previews in the appearance panel. */
-  .font-display-serif {
-    font-family: var(--font-instrument), 'Iowan Old Style', Georgia, serif;
-  }
   .font-display-grotesk {
     font-family: var(--font-space), var(--font-sans);
+  }
+  .font-display-editorial {
+    font-family: var(--font-bricolage), var(--font-sans);
   }
 
   .t-lead {

@@ -131,7 +131,7 @@ to `<html>` and to `localStorage`, and applied before first paint by
 | `data-theme` | `dark` (default), `light`, `system` | Colour scheme. |
 | `data-accent` | `mint` (default), `iris`, `azure`, `amber`, `rose` | Accent palette. Each has a light tone for dark backgrounds and a deep tone for light ones, both above 4.5:1. |
 | `data-motion` | `on`, `off` | Defaults to `off` when the OS asks for reduced motion. `off` stops every animation, including the aurora, marquee, counters and parallax. |
-| `data-font` | `geist` (default), `serif`, `grotesk` | Display face for headings only; body text never changes, so each choice costs one extra font file. |
+| `data-font` | `grotesk` (default), `editorial`, `neutral` | Display face for headings only — Space Grotesk, Bricolage Grotesque or Geist. Body text never changes, so each choice costs one extra font file. |
 
 ---
 

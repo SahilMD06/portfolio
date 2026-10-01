@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
-import { Geist, Geist_Mono, Instrument_Serif, Space_Grotesk } from 'next/font/google';
+import { Bricolage_Grotesque, Geist, Geist_Mono, Space_Grotesk } from 'next/font/google';
 
 import './globals.css';
 import { SiteAnalytics } from '@/components/site/analytics';
@@ -34,21 +34,21 @@ const geistMono = Geist_Mono({
 });
 
 /**
- * Two alternative heading faces a visitor can pick in the appearance panel.
- * Body copy never changes, so each choice costs a single extra file, loaded
- * the same self-hosted way.
+ * Display faces. Space Grotesk sets every heading by default — its wider
+ * counters and distinctive a/g sit well beside the mono labels this design
+ * leans on. Bricolage is the editorial alternative, and Geist the neutral one;
+ * both are offered in the appearance panel, and body copy never changes.
  */
-const instrumentSerif = Instrument_Serif({
-  subsets: ['latin'],
-  weight: '400',
-  display: 'swap',
-  variable: '--font-instrument',
-});
-
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-space',
+});
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-bricolage',
 });
 
 export const viewport: Viewport = {
@@ -110,11 +110,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${geist.variable} ${geistMono.variable} ${instrumentSerif.variable} ${spaceGrotesk.variable}`}
+      className={`${geist.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${bricolage.variable}`}
       data-theme="dark"
       data-accent="mint"
       data-motion="on"
-      data-font="geist"
+      data-font="grotesk"
       suppressHydrationWarning
     >
       <head>
